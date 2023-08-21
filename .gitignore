@@ -1,0 +1,9 @@
+*.pickle
+*.csv
+__pychache__
+__pychache__/
+*.png
+*.jpeg
+*.jpg
+glob("[0-9]/")
+glob("[0-9][0-9]/")
