@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import pickle
+import gzip
 
 def from_csv_db_to_dict(name_db = "./dataframes/database.csv"):
     db = pd.read_csv(name_db)
@@ -29,10 +30,24 @@ def save_dictionary_data(dictionary, name_dict="initial_dictionary.pickle"):
         pickle.dump(dictionary, file)
     return True
 
+def save_dictionary_data_compress(dictionary, name_dict="initial_dictionary.pickle"):
+    with gzip.open(name_dict, 'w', compresslevel=5) as file:
+        pickle.dump(dictionary, file, protocol=pickle.HIGHEST_PROTOCOL)
+    return True
+
+
 def load_dictionary_data(name_dict="initial_dictionary.pickle"):
     with open(name_dict, "rb") as file:
         dictionary = pickle.load(file)
     return dictionary
+
+
+def load_dictionary_compressed(filename):
+        """Resumes the simulation from a previous saved point."""
+        with gzip.open(filename) as file:
+            data = pickle.load(file)
+            return data
+
 
 def add_to_dictionary(dictionary, array, fitness):
     tuple_to_add = tuple(array)
@@ -57,7 +72,3 @@ def get_fitness(dictionary, array):
         return fitness
     else:
         return False
-    
-    
-
-
