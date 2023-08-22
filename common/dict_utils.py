@@ -64,6 +64,7 @@ def load_dictionary_compressed(filename):
 
 
 def add_to_dictionary(dictionary, array, fitness):
+    farray = np.asfarray(array)
     tuple_to_add = tuple(array)
     if tuple_to_add in dictionary.keys():
         return False

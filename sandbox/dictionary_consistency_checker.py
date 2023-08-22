@@ -18,7 +18,7 @@ list_keys_inconsistent = []
 
 for each_key in data.keys():
     try:
-        assert isinstance(each_key[0], numpy.float64), f"The key was of type {type(each_key[0])}"
+        assert isinstance(each_key[0], (numpy.floating,float)), f"The key was of type {type(each_key[0])}"
     except AssertionError:
         list_keys_inconsistent.append(each_key)
 
@@ -51,4 +51,4 @@ if num_in > 0:
                f'is {diff}. The new dictionary was saved with prefix cleaned_')
     print(message)
 
-print("Dictionary consistency check compelted")
+print("Dictionary consistency check completed")
