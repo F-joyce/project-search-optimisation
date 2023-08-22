@@ -1,5 +1,5 @@
 import sys, os
-common_folder = ""
+common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
 sys.path.insert(0, common_folder)
 
 import random

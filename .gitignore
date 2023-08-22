@@ -1,8 +1,8 @@
 *.pickle
 *.csv
 *.gzip
-__pychache__
-__pychache__/
+__pycache__
+__pycache__/
 *.png
 *.jpeg
 *.jpg
