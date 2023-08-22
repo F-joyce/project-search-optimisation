@@ -1,5 +1,6 @@
 *.pickle
 *.csv
+*.gzip
 __pychache__
 __pychache__/
 *.png

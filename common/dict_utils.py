@@ -25,6 +25,20 @@ def from_csv_db_to_dict(name_db = "./dataframes/database.csv"):
         barriers_dictionary[tuple_key] = fitness_value
     return barriers_dictionary
 
+
+def check_corruption(dictionary, min_realistic_value, max_realistic_value):
+    corrupted = False
+    corrupt_values = []
+    for value in dictionary.values():
+        if value > min_realistic_value or value < max_realistic_value:
+            corrupted = True
+            corrupt_values.append(value)
+    if corrupted:
+        return corrupted, corrupt_values
+    else:
+        return corrupted, None
+    
+
 def save_dictionary_data(dictionary, name_dict="initial_dictionary.pickle"):
     with open(name_dict, 'wb') as file:
         pickle.dump(dictionary, file)
@@ -72,3 +86,4 @@ def get_fitness(dictionary, array):
         return fitness
     else:
         return False
+    
