@@ -1,6 +1,6 @@
 import sys, os
 common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.working_dir_path.insert(0, common_folder)
+sys.path.insert(0, common_folder)
 
 import subprocess
 import sys
