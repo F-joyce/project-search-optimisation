@@ -12,10 +12,12 @@ from dict_utils import (save_dictionary_data_compress,
                         load_dictionary_compressed, 
                         get_fitness, add_to_dictionary_from_list)
 
+cwd_path = os.cwd()
 stored_dict_name = 'storage_dictionary.gzip'
 name_process = 'supernova.py'
 name_result_file = 'min.txt'
 name_conf_file = 'data.csv'
+
 
 
 def evaluate_pop_fitness(pop):
@@ -66,7 +68,7 @@ def evaluate_pop_fitness(pop):
 
 
 def batch_fitness_simulation(population, max_batch):
-    initial_dictionary = load_dictionary_compressed(stored_dict_name)
+    initial_dictionary = load_dictionary_compressed(f"{cwd_path}/{stored_dict_name}")
     working_dictionary = initial_dictionary.copy()
     initial_population = population.copy()
     total_fitnesses = []
@@ -90,7 +92,7 @@ def batch_fitness_simulation(population, max_batch):
 
     working_dictionary = add_to_dictionary_from_list(working_dictionary, to_batch_up, new_fitnesses)
     if len(working_dictionary) > len(initial_dictionary):
-        save = Thread(target=save_dictionary_data_compress, args=(working_dictionary, stored_dict_name))
+        save = Thread(target=save_dictionary_data_compress, args=(working_dictionary, f"{cwd_path}/{stored_dict_name}"))
         print("Opened Thread to save dictionary")
         save.start()
         save.join()
