@@ -12,7 +12,7 @@ from dict_utils import (save_dictionary_data_compress,
                         load_dictionary_compressed, 
                         get_fitness, add_to_dictionary_from_list)
 
-cwd_path = os.cwd()
+cwd_path = os.getcwd()
 stored_dict_name = 'storage_dictionary.gzip'
 name_process = 'supernova.py'
 name_result_file = 'min.txt'
@@ -39,7 +39,7 @@ def evaluate_pop_fitness(pop):
         start_time = time.time()
         minutes = 0
         print(f'Waiting for simulator to output result in folder {iteration}')
-        while not os.working_dir_path.exists(
+        while not os.path.exists(
                         f'{working_dir_path}/{iteration}/{name_result_file}'):
             if time.time()-start_time > 60:
                 start_time = time.time()
