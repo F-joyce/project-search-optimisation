@@ -28,7 +28,8 @@ while mapdl is None:
 		print(path)
 		with warnings.catch_warnings():
 			warnings.simplefilter("ignore")
-			mapdl = launch_mapdl(nproc=num_processor,run_location=path,additional_switches="-p ane3flds",mode='corba',override=True)
+			mapdl = launch_mapdl(nproc=num_processor,run_location=path,additional_switches="-p ane3flds",
+								 mode='corba',override=True, jobname=f"barrier")
 	except Exception as e:
 		print(str(e))
 		pass
