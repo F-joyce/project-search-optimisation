@@ -1,34 +1,28 @@
-import os
+import sys, os
+common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
+sys.path.insert(0, common_folder)
+
 import subprocess
 import sys
 import time
 import numpy as np
-
 from numpy import savetxt
-from deap.algorithms import tools, varAnd
 from threading import Thread
 
-from dict_utils import save_dictionary_data, load_dictionary_data, get_fitness, add_to_dictionary, add_to_dictionary_from_list
+from dict_utils import (save_dictionary_data_compress, load_dictionary_compressed, 
+                        get_fitness, add_to_dictionary_from_list)
 
-# calculate the fitness of a full population, gets in a population, return a list object with all the fitnesses
+
 
 def cal_pop_fitness(pop):
 
-    path = os.getcwd()  # works where the script is run from
-
-    fitness = []  # empty list for fitnesses
-    loopar = 0  # counter for creating the folder and launching the simulator that will be used by supernova.py
-    # iterate through the individuals in the population, update counter, save csv file with the BarrierShape, simulate(?) the barrier fitness with supernova2M.py
+    path = os.getcwd()
+    fitness = []
+    loopar = 0
     for Bshape in pop:
-        # shutil.rmtree(path+'/'+str(loopar), ignore_errors=True)
-        # os.mkdir(path+'/'+str(loopar))
         print(loopar)
-        # this creates(probably?) and change the directory to one corresponding to the counter number reached, the # of folder created at the end of the for loop should be the same as the # of individual
         os.chdir(path+'/'+str(loopar))
-        # shutil.copyfile(path+'/supernova.py', path+'/'+str(loopar)+'/supernova.py')
-        # save this Bshape(an array) in a csv formatted file called data.csv
         savetxt('data.csv', Bshape, delimiter=',')
-        # for each Bshape in the population pop it opens a pid exectuing the script supernova2M.py, probably this load the data.csv file just created
         pid = subprocess.Popen([sys.executable, "supernova.py"])
         print("After subprocess.Popen for loop number %d" %loopar)
         loopar += 1  # updates the counter
@@ -36,11 +30,9 @@ def cal_pop_fitness(pop):
     loopar = 0  # reset the counter to iterate through all the folders
 
     for Bshape in pop:  # iterate through all the folders just created to save the fitness found in the min.txt files in the list fitness
-        # check the file exist, waits until it does, this file is most likely an output of the supernova2M.py script
         while not os.path.exists(path+'/'+str(loopar)+'/min.txt'):
             print(path+'/'+str(loopar)+'/min.txt')
             time.sleep(5)
-        # open this min.txt and save the data in the first line to the list object "fitness"
         added = False
         while not added:
             try:

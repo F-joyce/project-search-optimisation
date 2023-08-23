@@ -1,5 +1,5 @@
 from deap.algorithms import tools, varAnd
-from fitness_evaluator import batch_fitness_simulation
+from fitness_evaluators import batch_fitness_simulation
 
 def eaSimple(max_batch, population, toolbox, cxpb, mutpb, ngen, stats=None,
              halloffame=None, verbose=__debug__):

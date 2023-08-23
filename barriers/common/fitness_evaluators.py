@@ -2,12 +2,10 @@ import sys, os
 common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
 sys.path.insert(0, common_folder)
 
-import os
 import subprocess
 import sys
 import time
 import numpy as np
-
 from numpy import savetxt
 from threading import Thread
 
@@ -19,7 +17,6 @@ dictionary = load_dictionary_compressed('updated_dictionary.pickle')
 def cal_pop_fitness(pop):
 
     path = os.getcwd()
-
     fitness = []
     loopar = 0
     for Bshape in pop:
