@@ -5,7 +5,6 @@ sys.path.insert(0, common_folder)
 import subprocess
 import sys
 import time
-import numpy as np
 from numpy import savetxt
 from threading import Thread
 
