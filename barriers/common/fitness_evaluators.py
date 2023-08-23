@@ -1,6 +1,6 @@
 import sys, os
 common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.path.insert(0, common_folder)
+sys.working_dir_path.insert(0, common_folder)
 
 import subprocess
 import sys
@@ -8,89 +8,99 @@ import time
 from numpy import savetxt
 from threading import Thread
 
-from dict_utils import (save_dictionary_data_compress, load_dictionary_compressed, 
+from dict_utils import (save_dictionary_data_compress, 
+                        load_dictionary_compressed, 
                         get_fitness, add_to_dictionary_from_list)
 
-dictionary = load_dictionary_compressed('updated_dictionary.pickle')
+stored_dict_name = 'storage_dictionary.gzip'
+name_process = 'supernova.py'
+name_result_file = 'min.txt'
+name_conf_file = 'data.csv'
 
-def cal_pop_fitness(pop):
 
-    path = os.getcwd()
+def evaluate_pop_fitness(pop):
+    iteration = 0
+    working_dir_path = os.getcwd()
     fitness = []
-    loopar = 0
-    for Bshape in pop:
-        print(loopar)
-        os.chdir(path+'/'+str(loopar))
-        savetxt('data.csv', Bshape, delimiter=',')
-        pid = subprocess.Popen([sys.executable, "supernova.py"])
-        print("After subprocess.Popen for loop number %d" %loopar)
-        loopar += 1  # updates the counter
+    for configuration in pop:
+        print(iteration)
+        os.chdir(f"{working_dir_path}/{iteration}")
+        savetxt('data.csv', configuration, delimiter=',')
+        # shell=True will open processes in the background 
+        process = subprocess.Popen([sys.executable, name_process], 
+                                   shell=True)
+        iteration += 1
+    
+    iteration = 0
 
-    loopar = 0  # reset the counter to iterate through all the folders
-
-    for Bshape in pop:  
-        while not os.path.exists(path+'/'+str(loopar)+'/min.txt'):
-            print(path+'/'+str(loopar)+'/min.txt')
-            time.sleep(5)
+    for configuration in pop:
+        start_time = time.time()
+        minutes = 0
+        print(f'Waiting for simulator to output result in folder {iteration}')
+        while not os.working_dir_path.exists(
+                        f'{working_dir_path}/{iteration}/{name_result_file}'):
+            if time.time()-start_time > 60:
+                start_time = time.time()
+                minutes += 1
+                print(f'Waiting for simulator to output result in folder'
+                      f'{iteration} since {minutes} minute(s)')
         
-        fitness_value = ""
-        while type(fitness_value) == str:
-            with open(path+'/'+str(loopar)+'/min.txt', 'r') as f:
+        added = False
+        while not added:
+            with open(f'{working_dir_path}/{iteration}/{name_result_file}',
+                                                             'r') as file:
                 try:
-                    fitness_value = float(f.readline().rstrip())
-                    # Fitness in Deap needs to be stored in a tuple object
+                    fitness_value = float(file.readline().rstrip())
                     fitness.append(fitness_value)
-                    print("Appended fitness value at %d" %loopar)
+                    print(f'Appended fitness value for folder {iteration}')
+                    added = True
                 except ValueError:
-                    f.close()
-            
-            time.sleep(1)  # probably to avoid issues ?
-        os.remove(path+'/'+str(loopar)+'/min.txt')  # delete the min.txt file
-        os.remove(path+'/'+str(loopar)+'/data.csv')  # delete the data.csv file
-        loopar += 1
-    os.chdir(path)
+                    file.close()
+
+            time.sleep(0.001)  # probably to avoid issues ?
+        os.remove(f'{working_dir_path}/{iteration}/{name_result_file}')
+        os.remove(f'{working_dir_path}/{iteration}/{name_conf_file}') 
+        iteration += 1
+    os.chdir(working_dir_path)
     return fitness
 
 def batch_fitness_simulation(population, max_batch):
+    initial_dictionary = load_dictionary_compressed(stored_dict_name)
+    working_dictionary = initial_dictionary.copy()
     initial_population = population.copy()
     total_fitnesses = []
     to_batch_up = []
-    new_dictionary = {}
     for individual in population:
-        if get_fitness(dictionary, individual) == False:
+        if get_fitness(initial_dictionary, individual) == False:
             to_batch_up.append(individual)
     new_fitnesses = []
     new_fitnesses_individuals = to_batch_up.copy()
-    loopar = 0
+    iteration = 0
     while len(to_batch_up) > 0:
-        print("In the full line of individual there are still %d to process" % len(to_batch_up))
+        print("There are %d unseen configuration to simulate" % len(to_batch_up))
         temp_list = []
         while (len(temp_list) < max_batch) and (len(to_batch_up) > 0):
-            print("In the cabin there are %d individuals" % len(temp_list))
             temp_list.append(to_batch_up.pop(0))
-        fitnesses_to_append = cal_pop_fitness(temp_list)
-        #loopar += len(fitnesses_to_append) #to delete if all works
+        fitnesses_to_append = evaluate_pop_fitness(temp_list)
         for fitness_value in fitnesses_to_append:
             new_fitnesses.append(fitness_value)
-        print("In the cave there are %d workers working" % len(new_fitnesses))
 
     print("The new fitnesses put in a list are: ", len(new_fitnesses))
-    print("The individual in the simulated list: ", len(to_batch_up) )
+    print("The individual to be calculated were: ", len(new_fitnesses_individuals))
 
-    new_dictionary = add_to_dictionary_from_list(dictionary, to_batch_up, new_fitnesses)
-    if len(new_dictionary) == 0:
-        new_dictionary = add_to_dictionary_from_list(dictionary, new_fitnesses_individuals, new_fitnesses)
+    working_dictionary = add_to_dictionary_from_list(working_dictionary, to_batch_up, new_fitnesses)
+    if len(working_dictionary) > len(initial_dictionary):
+        save = Thread(target=save_dictionary_data_compress, args=(working_dictionary, stored_dict_name))
+        print("Opened Thread to save dictionary")
+        save.start()
+        save.join()
+        print(f"Dictionary saved as {stored_dict_name}")
     else:
-        new_dictionary = add_to_dictionary_from_list(new_dictionary, new_fitnesses_individuals, new_fitnesses)
-    
-    save = Thread(target=save_dictionary_data, args=(new_dictionary, "dictionary.pickle"))
-    print("SAVING DICTIONARY")
-    save.start()
-    save.join()
-    print("SAVING COMPLETED")
+        print("No new fitnesses to save")
 
     for individual in initial_population:
-        fitness = get_fitness(dictionary, individual)
-        total_fitnesses.append((fitness,))
+        fitness = get_fitness(initial_dictionary, individual)
+        total_fitnesses.append((fitness,))  # fitness is stored as a tuple
+                                            # for DEAP eaSimple requirements
 
     return total_fitnesses
