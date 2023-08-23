@@ -44,9 +44,9 @@ if num_in > 0:
 
     name_new_dictionary = f"cleaned_{name_dictionary}"
 
-    save_dictionary_data_compress(data, f'{common_folder}/{name_new_dictionary}')
+    save_dictionary_data_compress(data, f'{path_to_dictionary}/{name_new_dictionary}')
 
-    message = (f'The dictionary has now consistent keys of numpy.float64 type. '
+    message = (f'The dictionary has now consistent keys of one type of float. '
                f'It stores {num_final_data} items. The number of keyvalue cleaned ' 
                f'is {diff}. The new dictionary was saved with prefix cleaned_')
     print(message)

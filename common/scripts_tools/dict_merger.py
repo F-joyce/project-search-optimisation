@@ -11,8 +11,12 @@ dicts_names = []
 dicts = []
 tot_len = 0
 
+expected_key_length = 450
+
 for filename in dicts_names:
     to_add = load_dictionary_compressed(filename)
+    assert len(next(iter(to_add))) == expected_key_length, "The key is not" \
+                                                            "of the expected length"
     tot_len+=len(to_add)
     dicts.append(to_add)
 
