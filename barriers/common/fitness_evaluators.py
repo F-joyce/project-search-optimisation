@@ -64,6 +64,7 @@ def evaluate_pop_fitness(pop):
     os.chdir(working_dir_path)
     return fitness
 
+
 def batch_fitness_simulation(population, max_batch):
     initial_dictionary = load_dictionary_compressed(stored_dict_name)
     working_dictionary = initial_dictionary.copy()
@@ -75,7 +76,6 @@ def batch_fitness_simulation(population, max_batch):
             to_batch_up.append(individual)
     new_fitnesses = []
     new_fitnesses_individuals = to_batch_up.copy()
-    iteration = 0
     while len(to_batch_up) > 0:
         print("There are %d unseen configuration to simulate" % len(to_batch_up))
         temp_list = []
