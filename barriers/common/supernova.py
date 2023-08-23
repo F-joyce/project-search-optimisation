@@ -9,22 +9,26 @@ with warnings.catch_warnings():
     from ansys.mapdl import core as pymapdl
     from ansys.mapdl.core import launch_mapdl
 
-new_path = 'C:/Program Files/ANSYS Inc/v182/ansys/bin/winx64/ansys182.exe'
-pymapdl.change_default_ansys_path(new_path)
+    new_path = 'C:/Program Files/ANSYS Inc/v182/ansys/bin/winx64/ansys182.exe'
+    pymapdl.change_default_ansys_path(new_path)
+
 
 def print_time():
 	return datetime.datetime.now().strftime("%H:%M:%S")
+
 
 print(f'Started simulation at {print_time()}')
 path = os.getcwd()
 num_processor = 2
 
-mapdl=None
+mapdl = None
 while mapdl is None:
 	try:
 		time.sleep(5)
 		print(path)
-		mapdl = launch_mapdl(nproc=num_processor,run_location=path,additional_switches="-p ane3flds",mode='corba',override=True)
+		with warnings.catch_warnings():
+			warnings.simplefilter("ignore")
+			mapdl = launch_mapdl(nproc=num_processor,run_location=path,additional_switches="-p ane3flds",mode='corba',override=True)
 	except Exception as e:
 		print(str(e))
 		pass
