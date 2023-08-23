@@ -11,8 +11,8 @@ from dict_utils import (load_dictionary_compressed, load_dictionary_data,
                         save_dictionary_data_compress, check_corruption)
 
 #################### TO BE ADJUSTED BY TASK
-MAX_VALUE = -4.9e-08
-MIN_VALUE = -0.1e-08
+MAX_VALUE = -1.1e-08
+MIN_VALUE = -4.9e-08
 name_dictionary = 'dictionary.pickle'
 new_name_dictionary = re.sub('pickle', 'gzip', name_dictionary)
 ####################
