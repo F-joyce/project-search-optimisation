@@ -1,3 +1,7 @@
+import sys, os
+common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
+sys.path.insert(0, common_folder)
+
 import pandas as pd
 import numpy as np
 import pickle
