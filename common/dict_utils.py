@@ -98,8 +98,8 @@ def consistency_check_type(data):
             list_keys_inconsistent.append(each_key)
     num_in = len(list_keys_inconsistent)
 
-    print("In the dictionary are stored %s items, the number of \
-    inconsistent entries found is %s" % (num_initial, num_in))
+    print("In the initial dictionary are stored %s items, the number of \
+non_float entries found is %s" % (num_initial, num_in))
 
     if num_in > 0:
         for each_integer_key in list_keys_inconsistent:
@@ -115,8 +115,7 @@ def consistency_check_type(data):
         num_final_data = len(data)
         diff = num_initial-num_final_data
         message = (f'The dictionary has now consistent keys of one type of float. '
-                f'It stores {num_final_data} items. The number of keyvalue cleaned ' 
-                f'is {diff}.')
+                f'It stores {num_final_data} items. {diff} keyvalues were cleaned ')
         print(message)
 
     print("Dictionary consistency check completed")
