@@ -140,6 +140,6 @@ def dict_merger(list_dicts:list, filename:str, expected_key_length = 450):
 def dict_merger_files(list_dict_filenames, filename_to_save, expected_key_length=450):
     dictionaries = []
     for dict_file in list_dict_filenames:
-        to_add = load_dictionary_compressed(list_dict_filenames)
+        to_add = load_dictionary_compressed(dict_file)
         dictionaries.append(to_add)
     dict_merger(dictionaries, filename_to_save, expected_key_length)

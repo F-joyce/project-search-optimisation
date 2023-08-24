@@ -1,6 +1,5 @@
 import unittest
 
-from Data_wrangling_functions import get_new_barriers
 from dict_utils import add_to_dictionary, get_fitness, add_to_dictionary_from_list
 
 class create_barrier(unittest.TestCase):
