@@ -25,7 +25,7 @@ mapdl = None
 while mapdl is None:
 	try:
 		time.sleep(5)
-		print(path)
+		#print(path)
 		with warnings.catch_warnings():
 			warnings.simplefilter("ignore")
 			mapdl = launch_mapdl(nproc=num_processor,run_location=path,additional_switches="-p ane3flds",

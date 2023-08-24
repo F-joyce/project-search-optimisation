@@ -25,7 +25,6 @@ def evaluate_pop_fitness(pop):
     working_dir_path = os.getcwd()
     fitness = []
     for configuration in pop:
-        print(iteration)
         os.chdir(f"{working_dir_path}/{iteration}")
         savetxt('data.csv', configuration, delimiter=',')
         # shell=True will open processes in the background 
