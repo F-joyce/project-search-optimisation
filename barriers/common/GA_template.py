@@ -9,6 +9,7 @@ import numpy
 import matplotlib.pyplot as plt
 
 from eaSimpleCustomised import eaSimple
+from dict_utils import dict_merger_files
 from deap import base
 from deap import creator
 from deap import tools
@@ -28,7 +29,9 @@ CX_TYPE = "cxTwoPoint"
 ###INITIALISATION PARAMETERS########################
 LOWEST_PERCENTAGE_SOIL = 40
 HIGHEST_PERCENTAGE_SOIL = 99
-####################################################
+###DATA PARAMETERS##################################
+main_dict_path = f"{common_barrier_folder}/barriers_main_dict.gzip"
+working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
 
 
 def get_new_barriers(icls):
@@ -70,6 +73,8 @@ toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
 
 path = experiment_path
 
+shutil.copyfile(main_dict_path, working_dict_path)
+
 for batch_number in range(MAX_BATCH):
 		shutil.rmtree(f"{path}/{batch_number}", ignore_errors=True)
 		os.mkdir(f"{path}/{batch_number}")
@@ -77,6 +82,9 @@ for batch_number in range(MAX_BATCH):
 	
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
+
+shutil.copyfile(main_dict_path, f"{common_barrier_folder}/backup/last_working_main.gzip")
+dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
 
 gen = log.select('gen')
 max_ = log.select('max')

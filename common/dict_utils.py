@@ -87,4 +87,59 @@ def get_fitness(dictionary, array):
         return fitness
     else:
         return False
-    
+
+import numpy
+
+def consistency_check_type(data):
+    num_initial = len(data)
+    list_keys_inconsistent = []
+    for each_key in data.keys():
+        try:
+            assert isinstance(each_key[0], (numpy.floating,float)), f"The key was of type {type(each_key[0])}"
+        except AssertionError:
+            list_keys_inconsistent.append(each_key)
+    num_in = len(list_keys_inconsistent)
+
+    print("In the dictionary are stored %s items, the number of \
+    inconsistent entries found is %s" % (num_initial, num_in))
+
+    if num_in > 0:
+        for each_integer_key in list_keys_inconsistent:
+            as_farray = numpy.asfarray(each_integer_key)
+            as_tuple = tuple(as_farray)
+            isin = get_fitness(data, as_tuple)
+            if not isin:
+                fitness = get_fitness(data, each_integer_key)
+                add_to_dictionary(data, as_farray, fitness)
+                del data[each_integer_key]
+            else:
+                del data[each_integer_key]
+        num_final_data = len(data)
+        diff = num_initial-num_final_data
+        message = (f'The dictionary has now consistent keys of one type of float. '
+                f'It stores {num_final_data} items. The number of keyvalue cleaned ' 
+                f'is {diff}.')
+        print(message)
+
+    print("Dictionary consistency check completed")
+
+
+def dict_merger(list_dicts:list, filename:str, expected_key_length = 450):
+    tot_len = 0
+    for dict_ in list_dicts:
+        assert len(next(iter(dict_))) == expected_key_length, "The key is not" \
+                                                                "of the expected length"
+        tot_len+=len(dict_)
+    cumulative_dictionary = {k: v for d in list_dicts for k, v in d.items()}
+    consistency_check_type(cumulative_dictionary)
+    cum_len = len(cumulative_dictionary)
+    save_dictionary_data_compress(cumulative_dictionary, filename)
+    print("The sum of length of dictionaries was %s, the len of the cumulative dictionary is %s" % (tot_len, cum_len))
+
+
+def dict_merger_files(list_dict_filenames, filename_to_save, expected_key_length=450):
+    dictionaries = []
+    for dict_file in list_dict_filenames:
+        to_add = load_dictionary_compressed(list_dict_filenames)
+        dictionaries.append(to_add)
+    dict_merger(dictionaries, filename_to_save, expected_key_length)
