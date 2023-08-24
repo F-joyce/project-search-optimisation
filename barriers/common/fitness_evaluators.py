@@ -19,7 +19,6 @@ name_result_file = 'min.txt'
 name_conf_file = 'data.csv'
 
 
-
 def evaluate_pop_fitness(pop):
     iteration = 0
     working_dir_path = os.getcwd()
