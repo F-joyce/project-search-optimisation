@@ -78,10 +78,8 @@ def add_to_dictionary_from_list(dictionary, list_arrays, list_fitnesses):
     return dictionary
 
 def get_fitness(dictionary, array):
-    if type(array) != tuple:
-        key = tuple(array)
-    else:
-        key = array
+    farray = numpy.asfarray(array)
+    key = tuple(farray)
     if key in dictionary.keys():
         fitness = dictionary[key]
         return fitness
