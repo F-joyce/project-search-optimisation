@@ -43,7 +43,7 @@ def evaluate_pop_fitness(pop):
             if time.time()-start_time > 60:
                 start_time = time.time()
                 minutes += 1
-                print(f'Waiting for simulator to output result in folder'
+                print(f'Waiting for simulator to output result in folder '
                       f'{iteration} since {minutes} minute(s)')
         
         added = False
