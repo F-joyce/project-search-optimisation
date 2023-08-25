@@ -52,11 +52,11 @@ def evaluate_pop_fitness(pop):
                 try:
                     line = file_.readline().strip()
                     if line != '':
-                        fitness_value = (float(line)) #unused bias removed
+                        fitness_value = float(line) #unused bias removed
                         processes_started[iteration].kill()
-                    fitness.append(fitness_value)
-                    print("Appended fitness value for file_%d" %iteration)
-                    added = True
+                        fitness.append(fitness_value)
+                        print("Appended fitness value for file_%d" %iteration)
+                        added = True
                 except ValueError:
                     file_.close()
 
