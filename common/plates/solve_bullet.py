@@ -3,10 +3,11 @@ import os
 import sys
 
 config_num=int(sys.argv[1])
+common_plates_dir = 'C:/Users/Administrator/Desktop/project-search-optimisation/common/plates'
 location = os.path.dirname(os.getcwd())
 os.chdir(location + "/file_" + str(config_num))
 
-os.system("C:/Users/Administrator/Desktop/1_1mat_opt_princ/lsdyna.exe I="+location+"/lsd1.k ncpu=1 memory=256M")
+os.system("C:/Users/Administrator/Desktop/1_1mat_opt_princ/lsdyna.exe I="+common_plates_dir+"/lsd1.k ncpu=1 memory=256M")
 
 # reading results from a special file and retrieving velocity from kinetic energy
 if os.path.isfile("matsum") and os.stat('matsum').st_size > 20000:
