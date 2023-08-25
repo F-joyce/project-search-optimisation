@@ -1,7 +1,6 @@
 import os
 import subprocess
 import time
-import numpy as np
 
 from numpy import savetxt
 from specific.utils import reshape_plates_arrays_pop
@@ -16,50 +15,54 @@ WIDTH_OF_PLATE = 50
 
 def evaluate_pop_fitness(pop):
     pop=reshape_plates_arrays_pop(pop, HEIGHT_OF_PLATE, WIDTH_OF_PLATE)
-    root_path = os.path.dirname(os.path.abspath(__file__))
-
-    def path_to_files(x):
-        n = str(x)
-        s = root_path + "/file_" + n
-        return s
-      
-    command = "python"
-    script = root_path + "/solve_1.py"
+    iteration = 0
+    working_dir_path = os.getcwd()
     fitness = []  
-    loopar = 0
     processes_started = []
+    command = "python"
+    script_to_run = f"{working_dir_path}/{name_process}"
+
+      
     for plate_config in pop:
-        print(loopar)
-        os.chdir(path_to_files(loopar))
+        os.chdir(f"{working_dir_path}/file_{iteration}")
         savetxt('init_state.txt', plate_config, fmt='%.0f')
         processes_started.append(
-            subprocess.Popen([command, script,str(loopar)]))
-        print("Process started with file_%d" %loopar)
-        loopar += 1  # updates the counter
+            subprocess.Popen([command,script_to_run,str(iteration)]))
+        #print("Process started with file_%d" %iteration)
+        iteration += 1  # updates the counter
 
-    loopar = 0  # reset the counter to iterate through all the folders
+    iteration = 0  # reset the counter to iterate through all the folders
 
-    for plate_config in pop:  
-        while not os.path.exists(path_to_files(loopar)+'/velocity.txt'):
-            print(path_to_files(loopar) + '/velocity.txt')
-            time.sleep(5)
+    for plate_config in pop:
+        start_time = time.time()
+        minutes = 0
+        print(f'Waiting for simulation to output result in file_{iteration}')  
+        while not os.path.exists(
+                    f"{working_dir_path}/file_{iteration}/{name_result_file}"):
+            if time.time()-start_time > 60:
+                start_time = time.time()
+                minutes += 1
+                print(f'Waiting for simulator to output result in file_'
+                      f'{iteration} since {minutes} minute(s)')
         
-        fitness_value = ""
-        while type(fitness_value) == str:
-            with open(path_to_files(loopar) + '/velocity.txt', 'r') as f:
+        added = False
+        while not added:
+            with open(f"{working_dir_path}/file_{iteration}/{name_result_file}"
+                      ,'r') as file_:
                 try:
-                    line=f.readline().strip()
-                    if line!='':
-                        fitness_value = ((-1)*float(line)) #unused bias
-                        processes_started[loopar].kill()
+                    line = file_.readline().strip()
+                    if line != '':
+                        fitness_value = ((-1)*float(line)) #unused bias removed
+                        processes_started[iteration].kill()
                     fitness.append(fitness_value)
-                    print("Appended fitness value of file_%d" %loopar)
+                    print("Appended fitness value in file_%d" %iteration)
+                    added = True
                 except ValueError:
-                    f.close()
+                    file_.close()
 
-            time.sleep(1)
-        os.remove(path_to_files(loopar) +'/velocity.txt')
-        os.remove(path_to_files(loopar) + '/init_state.txt')
-        loopar += 1
-    os.chdir(root_path)
+            time.sleep(0.001)
+        os.remove(f"{working_dir_path}/file_{iteration}/{name_result_file}")
+        os.remove(f"{working_dir_path}/file_{iteration}/{name_conf_file}")
+        iteration += 1
+    os.chdir(working_dir_path)
     return fitness

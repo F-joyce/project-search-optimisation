@@ -1,7 +1,4 @@
-import sys, os
-common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.path.insert(0, common_folder)
-
+import os
 import subprocess
 import sys
 import time
