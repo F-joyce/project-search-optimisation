@@ -1,5 +1,8 @@
-# pip install deap pandas matplotlib numpy scipy
-
+import sys, os
+common_plates_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common/plates'
+common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
+sys.path.insert(0, common_plates_folder)
+sys.path.insert(0,common_folder)
 
 import os
 import shutil
