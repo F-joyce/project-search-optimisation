@@ -105,17 +105,13 @@ non_float entries found is %s" % (num_initial, num_in))
         for each_integer_key in list_keys_inconsistent:
             as_farray = numpy.asfarray(each_integer_key)
             as_tuple = tuple(as_farray)
-            isin = get_fitness(data, as_tuple)
-            if not isin:
-                fitness = get_fitness(data, each_integer_key)
-                add_to_dictionary(data, as_farray, fitness)
-                del data[each_integer_key]
-            else:#BEFORE MODIFICATION
-                del data[each_integer_key]
+            fitness = get_fitness(data, each_integer_key)
+            del data[each_integer_key]
+            add_to_dictionary(data, as_tuple, fitness)
         num_final_data = len(data)
         diff = num_initial-num_final_data
         message = (f'The dictionary has now consistent keys of one type of float. '
-                f'It stores {num_final_data} items. {diff} keyvalues were cleaned ')
+                f'It stores {num_final_data} items. {diff} doubles were found')
         print(message)
 
     print("Dictionary consistency check completed")
