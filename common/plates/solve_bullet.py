@@ -3,7 +3,7 @@ import os
 import sys
 
 config_num=int(sys.argv[1])
-location = os.getcwd()
+location = os.path.dirname(os.getcwd())
 os.chdir(location + "/file_" + str(config_num))
 
 os.system("C:/Users/Administrator/Desktop/1_1mat_opt_princ/lsdyna.exe I="+location+"/lsd1.k ncpu=1 memory=256M")
