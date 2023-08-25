@@ -29,9 +29,6 @@ MUT_PROBABILITY = 0.2
 BIT_MUT_PROBABILITY = 0.05
 TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
-###INITIALISATION PARAMETERS########################
-LOWEST_PERCENTAGE_SOIL = 40
-HIGHEST_PERCENTAGE_SOIL = 99
 ###DATA PARAMETERS##################################
 main_dict_path = f"{common_plates_folder}/plates_main_dict.gzip"
 working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
@@ -65,7 +62,7 @@ def main(p_size = POPULATION, gen=GENERATIONS):
     return pop, log, hof
 
 
-creator.create("FitnessMin", base.Fitness, weights=(1.0,))
+creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 toolbox = base.Toolbox()
 toolbox.register("individual", get_new_plates, creator.Individual)
@@ -87,9 +84,9 @@ shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_mai
 dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
 
 gen = log.select('gen')
-max_fitness = log.select('max')
+best_fitness = log.select('min')
 
-plt.plot(gen, max_fitness)
+plt.plot(gen, best_fitness)
 plt.show()
 
 df_log = pd.DataFrame(log)
