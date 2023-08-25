@@ -110,7 +110,7 @@ non_float entries found is %s" % (num_initial, num_in))
                 fitness = get_fitness(data, each_integer_key)
                 add_to_dictionary(data, as_farray, fitness)
                 del data[each_integer_key]
-            else:
+            else:#BEFORE MODIFICATION
                 del data[each_integer_key]
         num_final_data = len(data)
         diff = num_initial-num_final_data
