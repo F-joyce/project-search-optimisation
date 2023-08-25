@@ -11,6 +11,7 @@ name_result_file = 'velocity.txt'
 name_conf_file = 'init_state.txt'
 HEIGHT_OF_PLATE = 10
 WIDTH_OF_PLATE = 50
+common_plates_folder = "C:/Users/Administrator/Desktop/project-search-optimisation/common/plates"
 ####################
 
 def evaluate_pop_fitness(pop):
@@ -20,7 +21,7 @@ def evaluate_pop_fitness(pop):
     fitness = []  
     processes_started = []
     command = "python"
-    script_to_run = f"{working_dir_path}/{name_process}"
+    script_to_run = f"{common_plates_folder}/{name_process}"
 
       
     for plate_config in pop:
@@ -28,7 +29,6 @@ def evaluate_pop_fitness(pop):
         savetxt('init_state.txt', plate_config, fmt='%.0f')
         processes_started.append(
             subprocess.Popen([command,script_to_run,str(iteration)]))
-        #print("Process started with file_%d" %iteration)
         iteration += 1  # updates the counter
 
     iteration = 0  # reset the counter to iterate through all the folders
@@ -55,7 +55,7 @@ def evaluate_pop_fitness(pop):
                         fitness_value = ((-1)*float(line)) #unused bias removed
                         processes_started[iteration].kill()
                     fitness.append(fitness_value)
-                    print("Appended fitness value in file_%d" %iteration)
+                    print("Appended fitness value for file_%d" %iteration)
                     added = True
                 except ValueError:
                     file_.close()
