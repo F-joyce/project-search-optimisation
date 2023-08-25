@@ -1,11 +1,8 @@
 import random
 
-
 ######################################
 # GA Custom Mutation                 #
 ######################################
-# 
-
 
 def mutFlipBitCustom(individual, indpb):
     """Flip the value of the attributes of the input individual and return the

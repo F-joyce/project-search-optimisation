@@ -9,32 +9,33 @@ import shutil
 import random
 import pandas as pd
 import numpy
-import deap
 import matplotlib.pyplot as plt
 
-# import deap packages required
-
-from eaSimpleBullets import eaSimple
+from eaSimpleCustomised import eaSimple
+from dict_utils import dict_merger_files
 from deap import base
 from deap import creator
 from deap import tools
 
-
+###PATH GLOBALS#####################################
+experiment_path = os.getcwd()
+###PROCESS RELATED GLOBALS##########################
+MAX_BATCH = 5
+###GENETIC ALGORITHM PARAMETERS#####################
+POPULATION = 5
+GENERATIONS = 2
+CX_PROBABILITY = 0.75
+MUT_PROBABILITY = 0.2
+BIT_MUT_PROBABILITY = 0.05
+TOURN_SIZE = 3
+CX_TYPE = "cxTwoPoint"
+###INITIALISATION PARAMETERS########################
+LOWEST_PERCENTAGE_SOIL = 40
+HIGHEST_PERCENTAGE_SOIL = 99
+###DATA PARAMETERS##################################
+main_dict_path = f"{common_plates_folder}/plates_main_dict.gzip"
+working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
 ####################################################
-####################################################
-MAX_BATCH = 40
-POPULATION = 120
-GENERATIONS = 100
-####################################################
-####################################################
-
-def from_string_to_array(array_in_string):
-    x = array_in_string.replace('\n', '')
-    x = x.replace('[', '')
-    x = x.replace(']', '')
-    array = numpy.fromstring(x, dtype=float, sep=' ')
-    return array
-
 
 def get_new_plates(icls):
 
@@ -45,16 +46,12 @@ def get_new_plates(icls):
     new_plate = icls(array.tolist())
     return new_plate
 
+
 def main(p_size = POPULATION, gen=GENERATIONS):
 
-    # choose a population size: e.g. 200
     pop = toolbox.population(n=p_size)
-
-    # keep track of the single best solution found
     hof = tools.HallOfFame(1)
 
-    # create a statistics object: we can log what ever statistics we want using this. We use the numpy Python library
-    # to calculate the stats and label them with convenient labels
     stats = tools.Statistics(lambda ind: ind.fitness.values)
     stats.register("avg", numpy.mean)
     stats.register("std", numpy.std)
@@ -62,9 +59,7 @@ def main(p_size = POPULATION, gen=GENERATIONS):
     stats.register("max", numpy.max)
     stats.register
 
-    # run the algorithm: we need to tell it what parameters to use
-    # cxpb = crossover probability; mutpb = mutation probability; ngen = number of iterations
-    pop, log = eaSimple(MAX_BATCH,  pop, toolbox, cxpb=0.75, mutpb=0.20, ngen=gen,
+    pop, log = eaSimple(MAX_BATCH,  pop, toolbox, cxpb=CX_PROBABILITY, mutpb=MUT_PROBABILITY, ngen=gen,
                                    stats=stats, halloffame=hof, verbose=False)
 
     return pop, log, hof
@@ -72,24 +67,22 @@ def main(p_size = POPULATION, gen=GENERATIONS):
 
 creator.create("FitnessMin", base.Fitness, weights=(1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
-# create a toolbox
 toolbox = base.Toolbox()
-# Attribute generator
-#an individual consists of repeated genes of type "attr_bool"  - we specify 100 genes
 toolbox.register("individual", get_new_plates, creator.Individual)
-#  a population consist of a list of individuals
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
-toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutFlipBit, indpb=0.05)
-toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("mate", getattr(tools, CX_TYPE))
+toolbox.register("mutate", tools.mutFlipBit, indpb=BIT_MUT_PROBABILITY)
+toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
 
-path = os.getcwd()
-for loopar in range(MAX_BATCH):
-		shutil.rmtree(path+'/file_'+str(loopar), ignore_errors=True)
-		os.mkdir(path+'/file_'+ str(loopar))
+for batch_number in range(MAX_BATCH):
+		shutil.rmtree(f"{experiment_path}/file_{batch_number}", ignore_errors=True)
+		os.mkdir(f"{experiment_path}/file_{batch_number}")
 	
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
+
+shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
+dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
 
 gen = log.select('gen')
 max_fitness = log.select('max')
@@ -99,6 +92,6 @@ plt.show()
 
 df_log = pd.DataFrame(log)
 
-df_log.to_csv("deap_data_bullet.csv", index = False)
+df_log.to_csv("plates_ga_statistics.csv", index = False)
 
 

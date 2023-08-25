@@ -89,13 +89,13 @@ shutil.copyfile(main_dict_path, f"{common_barrier_folder}/backup/last_working_ma
 dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
 
 gen = log.select('gen')
-max_ = log.select('max')
+max_fitness = log.select('max')
 
-plt.plot(gen, max_)
+plt.plot(gen, max_fitness)
 plt.show()
 
 df_log = pd.DataFrame(log)
 
-df_log.to_csv("experiment_statistics.csv", index = False)
+df_log.to_csv("barriers_ga_statistics.csv", index = False)
 
 

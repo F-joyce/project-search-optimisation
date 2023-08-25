@@ -3,7 +3,7 @@ import subprocess
 import time
 
 from numpy import savetxt
-from specific.utils import reshape_plates_arrays_pop
+from utils import reshape_plates_arrays_pop
 
 ####################
 name_process = 'solve_bullet.py'
