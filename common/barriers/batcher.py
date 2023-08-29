@@ -20,6 +20,7 @@ def batch_fitness_simulation(population, max_batch):
     to_batch_up = []
     for individual in population:
         if get_fitness(working_dictionary, individual) == False:
+            # get_fitness(temporarydict, individual) == False:
             to_batch_up.append(individual)
     new_fitnesses = []
     new_fitnesses_individuals = to_batch_up.copy()

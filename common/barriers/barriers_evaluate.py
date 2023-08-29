@@ -17,7 +17,7 @@ def evaluate_pop_fitness(pop):
         savetxt('data.csv', configuration, delimiter=',')
         # shell=True will open processes in the background 
         process = subprocess.Popen([sys.executable, name_process], 
-                                   shell=True)
+                                   shell=True) #TODO write in docs
         iteration += 1
     
     iteration = 0
