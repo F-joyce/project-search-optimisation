@@ -45,7 +45,7 @@ def save_dictionary_data(dictionary, name_dict="initial_dictionary.pickle"):
     return True
 
 def save_dictionary_data_compress(dictionary, name_dict="initial_dictionary.pickle"):
-    with gzip.open(name_dict, 'w', compresslevel=5) as file:
+    with gzip.open(name_dict, 'w', compresslevel=1) as file:
         pickle.dump(dictionary, file, protocol=pickle.HIGHEST_PROTOCOL)
     return True
 
