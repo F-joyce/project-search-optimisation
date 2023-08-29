@@ -19,7 +19,7 @@ from deap import tools
 ###PATH GLOBALS#####################################
 experiment_path = os.getcwd()
 ###PROCESS RELATED GLOBALS##########################
-MAX_BATCH = 1
+MAX_BATCH = 5
 ###GENETIC ALGORITHM PARAMETERS#####################
 POPULATION = 2
 GENERATIONS = 2
@@ -82,20 +82,46 @@ for batch_number in range(MAX_BATCH):
 		os.mkdir(f"{path}/{batch_number}")
 		shutil.copyfile(f"{common_barrier_folder}/supernova.py", f"{path}/{batch_number}/supernova.py")
 	
+def run_experiments(times, function):
+    
+    global toolbox
+    list_individuals = [] 
+    list_best_values = []
+    list_gens = []
 
-pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
+    for i in range(times):
+        
+        pop, log, hof = function(p_size = POPULATION, gen = GENERATIONS)
 
-shutil.copyfile(main_dict_path, f"{common_barrier_folder}/backup/last_working_main.gzip")
-dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
+        best = hof[0].fitness.values[0]   # best fitness found is stored at index 0 in the hof list
 
-gen = log.select('gen')
-max_fitness = log.select('max')
+        max = log.select("max")  # max fitness per generation stored in log
 
-plt.plot(gen, max_fitness)
-plt.show()
+        for ii in range(GENERATIONS):  # set to ngen
+            fit = max[ii]
+            if fit == best:
+                break     
 
-df_log = pd.DataFrame(log)
+        list_individuals.append(hof[0])
+        list_best_values.append(best)
+        list_gens.append(ii)
+        df_log = pd.DataFrame(log)
+        number = str(i)
+        df_log.to_csv("data_of_run_"+number+".csv", index = False)
+        print("#############Cleaning Folders#############")
+        #subprocess.Popen(["clean.bat"])
+        #end for loop experiments
 
-df_log.to_csv("barriers_ga_statistics.csv", index = False)
+
+    for i in range(times):
+        print(f"At iteration number {i}")
+        print(f"The best individual has a fitness value of {list_best_values[i]}")
+
+    shutil.copyfile(main_dict_path, f"{common_barrier_folder}/backup/last_working_main.gzip")
+    dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
+
+    return list_individuals, list_best_values, list_gens
+
+run_experiments(3, main)
 
 
