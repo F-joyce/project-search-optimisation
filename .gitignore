@@ -11,3 +11,4 @@ glob("[0-9][0-9]/")
 .vscode/
 sandbox/
 .DS_Store
+*.json
