@@ -11,10 +11,11 @@ from plates_evaluate import evaluate_pop_fitness
 from globals_ import plates_dict, backup_dict
 cwd_path = os.getcwd()
 
-backup_dictionary = backup_dict
+
 
 def batch_fitness_simulation(population, max_batch):
     working_dictionary = plates_dict
+    backup_dictionary = backup_dict
     len_backup_initial = len(backup_dictionary)
     initial_population = population.copy()
     total_fitnesses = []
