@@ -11,6 +11,8 @@ from plates_evaluate import evaluate_pop_fitness
 from GA_plates_template import plates_dict, backup_dictionary
 cwd_path = os.getcwd()
 
+backup_dictionary = backup_dictionary
+
 def batch_fitness_simulation(population, max_batch):
     working_dictionary = plates_dict
     len_backup_initial = len(backup_dictionary)
