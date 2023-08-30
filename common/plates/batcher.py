@@ -41,7 +41,7 @@ def batch_fitness_simulation(population, max_batch):
         print("Opened Thread to save backup dictionary")
         save.start()
         save.join()
-        print(f"Dictionary saved as backup_dict.gzip")
+        print(f"Dictionary saved as backup_dict.gzip with {len(backup_dictionary)} configurations")
     else:
         print("No new fitnesses to save")
 
