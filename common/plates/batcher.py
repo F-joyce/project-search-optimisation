@@ -40,7 +40,7 @@ def batch_fitness_simulation(population, max_batch):
     working_dictionary = add_to_dictionary_from_list(working_dictionary, new_fitnesses_individuals, new_fitnesses)
     backup_dictionary = add_to_dictionary_from_list(backup_dictionary, new_fitnesses_individuals, new_fitnesses)
     if len(backup_dictionary) > len_backup_initial:
-        save = Thread(target=save_dictionary_data_compress, args=(working_dictionary, f"{cwd_path}/backup_dict.gzip"))
+        save = Thread(target=save_dictionary_data_compress, args=(backup_dictionary, f"{cwd_path}/backup_dict.gzip"))
         print("Opened Thread to save backup dictionary")
         save.start()
         save.join()
