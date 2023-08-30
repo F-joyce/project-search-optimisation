@@ -8,13 +8,12 @@ from dict_utils import (save_dictionary_data_compress,
                         get_fitness, add_to_dictionary_from_list)
 
 from plates_evaluate import evaluate_pop_fitness
-
+from GA_plates_template import plates_dict, backup_dictionary
 cwd_path = os.getcwd()
-stored_dict_name = 'storage_dictionary.gzip'
 
 def batch_fitness_simulation(population, max_batch):
-    initial_dictionary = load_dictionary_compressed(f"{cwd_path}/{stored_dict_name}")
-    working_dictionary = initial_dictionary.copy()
+    working_dictionary = plates_dict
+    len_backup_initial = len(backup_dictionary)
     initial_population = population.copy()
     total_fitnesses = []
     to_batch_up = []
@@ -36,12 +35,13 @@ def batch_fitness_simulation(population, max_batch):
     print("The individual to be calculated were: ", len(new_fitnesses_individuals))
 
     working_dictionary = add_to_dictionary_from_list(working_dictionary, new_fitnesses_individuals, new_fitnesses)
-    if len(working_dictionary) > len(initial_dictionary):
-        save = Thread(target=save_dictionary_data_compress, args=(working_dictionary, f"{cwd_path}/{stored_dict_name}"))
-        print("Opened Thread to save dictionary")
+    backup_dictionary = add_to_dictionary_from_list(backup_dictionary, new_fitnesses_individuals, new_fitnesses)
+    if len(backup_dictionary) > len_backup_initial:
+        save = Thread(target=save_dictionary_data_compress, args=(working_dictionary, f"{cwd_path}/backup_dict.gzip"))
+        print("Opened Thread to save backup dictionary")
         save.start()
         save.join()
-        print(f"Dictionary saved as {stored_dict_name}")
+        print(f"Dictionary saved as backup_dict.gzip")
     else:
         print("No new fitnesses to save")
 

@@ -12,7 +12,7 @@ import numpy
 import matplotlib.pyplot as plt
 
 from eaSimpleCustomised import eaSimple
-from dict_utils import dict_merger_files
+from dict_utils import save_dictionary_data_compress
 from deap import base
 from deap import creator
 from deap import tools
@@ -30,6 +30,8 @@ BIT_MUT_PROBABILITY = 0.05
 TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
 ###DATA PARAMETERS##################################
+from globals_ import plates_dict
+backup_dictionary = {}
 main_dict_path = f"{common_plates_folder}/plates_main_dict.gzip"
 working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
 ####################################################
@@ -71,7 +73,7 @@ toolbox.register("mate", getattr(tools, CX_TYPE))
 toolbox.register("mutate", tools.mutFlipBit, indpb=BIT_MUT_PROBABILITY)
 toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
 
-shutil.copyfile(main_dict_path, working_dict_path)
+#shutil.copyfile(main_dict_path, working_dict_path)
 
 for batch_number in range(MAX_BATCH):
 		shutil.rmtree(f"{experiment_path}/file_{batch_number}", ignore_errors=True)
@@ -81,7 +83,9 @@ for batch_number in range(MAX_BATCH):
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
 shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
-dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
+save_dictionary_data_compress(plates_dict, main_dict_path)
+
+print(f"Added {len(backup_dictionary)} new configurations/fitness pair to dictionary")
 
 gen = log.select('gen')
 best_fitness = log.select('min')
