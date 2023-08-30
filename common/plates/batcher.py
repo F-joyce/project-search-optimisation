@@ -8,10 +8,10 @@ from dict_utils import (save_dictionary_data_compress,
                         get_fitness, add_to_dictionary_from_list)
 
 from plates_evaluate import evaluate_pop_fitness
-from globals_ import plates_dict, backup_dictionary
+from globals_ import plates_dict, backup_dict
 cwd_path = os.getcwd()
 
-backup_dictionary = backup_dictionary
+backup_dictionary = backup_dict
 
 def batch_fitness_simulation(population, max_batch):
     working_dictionary = plates_dict
