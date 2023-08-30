@@ -8,7 +8,7 @@ from dict_utils import (save_dictionary_data_compress,
                         get_fitness, add_to_dictionary_from_list)
 
 from plates_evaluate import evaluate_pop_fitness
-from GA_plates_template import plates_dict, backup_dictionary
+from globals_ import plates_dict, backup_dictionary
 cwd_path = os.getcwd()
 
 backup_dictionary = backup_dictionary

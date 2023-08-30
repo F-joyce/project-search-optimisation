@@ -6,3 +6,4 @@ common_plates_folder = 'C:/Users/Administrator/Desktop/project-search-optimisati
 
 plates_dict = load_dictionary_compressed(f"{common_plates_folder}/plates_main_dict.gzip")
 barrier_dict = load_dictionary_compressed(f"{common_barrier_folder}/barriers_main_dict.gzip")
+backup_dict = {}
