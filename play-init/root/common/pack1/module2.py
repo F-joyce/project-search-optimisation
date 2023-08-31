@@ -1,4 +1,4 @@
-from pack1 import data_to_manipulate, backup
+from ..pack1 import data_to_manipulate, backup
 
 def manipulate_data():
     for index in range(len(data_to_manipulate)):
