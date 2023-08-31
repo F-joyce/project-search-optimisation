@@ -1,7 +1,7 @@
 import sys, os
-common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.path.insert(0,common_folder)
-from common import plates
+root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
+sys.path.insert(0,root_folder)
+import common
 from plates import common_plates_folder
 
 import os
@@ -31,7 +31,6 @@ TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
 ###DATA PARAMETERS##################################
 main_dict_path = f"{common_plates_folder}/plates_main_dict.gzip"
-working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
 ####################################################
 
 def get_new_plates(icls):
