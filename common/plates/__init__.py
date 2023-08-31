@@ -1,4 +1,3 @@
-from ... import common
 from dict_utils import load_dictionary_compressed
 import sys
 
