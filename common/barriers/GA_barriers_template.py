@@ -1,8 +1,8 @@
 import sys, os
-common_barrier_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common/barriers'
-common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.path.insert(0, common_barrier_folder)
-sys.path.insert(0,common_folder)
+root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
+sys.path.insert(0,root_folder)
+import common
+from barriers import common_barrier_folder
 
 import shutil
 import random
@@ -11,7 +11,7 @@ import numpy
 import matplotlib.pyplot as plt
 
 from eaSimpleCustomised import eaSimple
-from dict_utils import dict_merger_files
+from dict_utils import save_dictionary_data_compress
 from deap import base
 from deap import creator
 from deap import tools
@@ -33,8 +33,6 @@ LOWEST_PERCENTAGE_SOIL = 40
 HIGHEST_PERCENTAGE_SOIL = 99
 ###DATA PARAMETERS##################################
 main_dict_path = f"{common_barrier_folder}/barriers_main_dict.gzip"
-working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
-
 
 def get_new_barriers(icls):
 
@@ -73,25 +71,24 @@ toolbox.register("mate", getattr(tools, CX_TYPE))
 toolbox.register("mutate", tools.mutFlipBit, indpb=BIT_MUT_PROBABILITY)
 toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
 
-path = experiment_path
-
-shutil.copyfile(main_dict_path, working_dict_path)
 
 for batch_number in range(MAX_BATCH):
-		shutil.rmtree(f"{path}/{batch_number}", ignore_errors=True)
-		os.mkdir(f"{path}/{batch_number}")
-		shutil.copyfile(f"{common_barrier_folder}/supernova.py", f"{path}/{batch_number}/supernova.py")
+		shutil.rmtree(f"{experiment_path}/{batch_number}", ignore_errors=True)
+		os.mkdir(f"{experiment_path}/{batch_number}")
+		shutil.copyfile(f"{common_barrier_folder}/supernova.py", f"{experiment_path}/{batch_number}/supernova.py")
 	
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
+from barriers import barrier_dict, backup_dict
 shutil.copyfile(main_dict_path, f"{common_barrier_folder}/backup/last_working_main.gzip")
-dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
+save_dictionary_data_compress(barrier_dict, main_dict_path)
+print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")
 
 gen = log.select('gen')
-max_fitness = log.select('max')
+best_fitness = log.select('max')
 
-plt.plot(gen, max_fitness)
+plt.plot(gen, best_fitness)
 plt.show()
 
 df_log = pd.DataFrame(log)

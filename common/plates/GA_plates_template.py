@@ -4,7 +4,6 @@ sys.path.insert(0,root_folder)
 import common
 from plates import common_plates_folder
 
-import os
 import shutil
 import random
 import pandas as pd
@@ -70,7 +69,6 @@ toolbox.register("mate", getattr(tools, CX_TYPE))
 toolbox.register("mutate", tools.mutFlipBit, indpb=BIT_MUT_PROBABILITY)
 toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
 
-#shutil.copyfile(main_dict_path, working_dict_path)
 
 for batch_number in range(MAX_BATCH):
 		shutil.rmtree(f"{experiment_path}/file_{batch_number}", ignore_errors=True)
@@ -79,7 +77,7 @@ for batch_number in range(MAX_BATCH):
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
-from common.plates import plates_dict, backup_dict
+from plates import plates_dict, backup_dict
 
 shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
 save_dictionary_data_compress(plates_dict, main_dict_path)
