@@ -1,16 +1,11 @@
-import sys, os
-common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.path.insert(0, common_folder)
-
+import os
 from threading import Thread
 from dict_utils import (save_dictionary_data_compress, 
-                        load_dictionary_compressed, 
                         get_fitness, add_to_dictionary_from_list)
 
 from plates_evaluate import evaluate_pop_fitness
-from globals_ import plates_dict, backup_dict
+from plates import plates_dict, backup_dict
 cwd_path = os.getcwd()
-
 
 
 def batch_fitness_simulation(population, max_batch):

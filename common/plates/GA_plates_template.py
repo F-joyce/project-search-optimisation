@@ -1,8 +1,8 @@
 import sys, os
-common_plates_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common/plates'
 common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.path.insert(0, common_plates_folder)
 sys.path.insert(0,common_folder)
+from common import plates
+from plates import common_plates_folder
 
 import os
 import shutil
@@ -30,7 +30,6 @@ BIT_MUT_PROBABILITY = 0.05
 TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
 ###DATA PARAMETERS##################################
-backup_dictionary = {}
 main_dict_path = f"{common_plates_folder}/plates_main_dict.gzip"
 working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
 ####################################################
@@ -81,7 +80,8 @@ for batch_number in range(MAX_BATCH):
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
-from globals_ import plates_dict, backup_dict
+from common.plates import plates_dict, backup_dict
+
 shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
 save_dictionary_data_compress(plates_dict, main_dict_path)
 
