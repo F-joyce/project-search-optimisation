@@ -4,7 +4,7 @@ from dict_utils import (save_dictionary_data_compress,
                         get_fitness, add_to_dictionary_from_list)
 
 from plates_evaluate import evaluate_pop_fitness
-from plates import plates_dict, backup_dict
+from plates import plates_dict, backup_dict, evaluated
 cwd_path = os.getcwd()
 
 
@@ -12,6 +12,7 @@ def batch_fitness_simulation(population, max_batch):
     working_dictionary = plates_dict
     backup_dictionary = backup_dict
     len_backup_initial = len(backup_dictionary)
+    evaluated = evaluated
     initial_population = population.copy()
     total_fitnesses = []
     to_batch_up = []
@@ -44,6 +45,10 @@ def batch_fitness_simulation(population, max_batch):
         print("No new fitnesses to save")
 
     for individual in initial_population:
+        if individual in evaluated:
+            pass
+        else:
+            evaluated.append(individual)
         fitness = get_fitness(working_dictionary, individual)
         total_fitnesses.append((fitness,))  # fitness is stored as a tuple
                                             # for DEAP eaSimple requirements

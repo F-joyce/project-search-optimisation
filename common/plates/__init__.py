@@ -8,3 +8,6 @@ sys.path.insert(0, common_plates_folder)
 print("Loading dictionaries from file")
 plates_dict = load_dictionary_compressed(f"{common_plates_folder}/plates_main_dict.gzip")
 backup_dict = {}
+
+print("Initialising list for evaluation count")
+evaluated = []

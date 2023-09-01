@@ -79,7 +79,7 @@ for batch_number in range(MAX_BATCH):
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
-from common.plates import plates_dict, backup_dict
+from common.plates import plates_dict, backup_dict, evaluated
 
 shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
 save_dictionary_data_compress(plates_dict, main_dict_path)
@@ -95,5 +95,6 @@ plt.show()
 df_log = pd.DataFrame(log)
 
 df_log.to_csv("plates_ga_statistics.csv", index = False)
-
+with open('total-num-eval.txt', 'w') as f:
+  f.write('%d' % len(evaluated))
 
