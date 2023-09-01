@@ -79,7 +79,9 @@ for batch_number in range(MAX_BATCH):
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
-from common.plates import plates_dict, backup_dict, evaluated
+plates_dict = common.plates.plates_dict
+backup_dict = common.plates.backup_dict
+evaluated = common.plates.evaluated
 
 shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
 save_dictionary_data_compress(plates_dict, main_dict_path)
