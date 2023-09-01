@@ -4,14 +4,17 @@ import time
 
 from numpy import savetxt
 from utils import reshape_plates_arrays_pop
-
+from common import TESTING
+from plates import common_plates_folder
 ####################
-name_process = 'solve_bullet.py'
+if TESTING:
+    name_process = 'solve_bullet_dummy.py'
+else:
+    name_process = 'solve_bullet.py'
 name_result_file = 'velocity.txt'
 name_conf_file = 'init_state.txt'
 HEIGHT_OF_PLATE = 10
 WIDTH_OF_PLATE = 50
-common_plates_folder = "C:/Users/Administrator/Desktop/project-search-optimisation/common/plates"
 ####################
 
 def evaluate_pop_fitness(pop):

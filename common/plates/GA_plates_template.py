@@ -1,8 +1,17 @@
+TESTING = True
+
 import sys, os
-root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
-sys.path.insert(0,root_folder)
+if TESTING:
+    root_folder = '/Users/fede/Desktop/project-search-optimisation'
+    sys.path.insert(0,root_folder)
+else:
+    root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
+    sys.path.insert(0,root_folder)
+
 import common
-from plates import common_plates_folder
+common.TESTING = True
+
+from common.plates import common_plates_folder
 
 import os
 import shutil
