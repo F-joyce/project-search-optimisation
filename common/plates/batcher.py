@@ -12,7 +12,7 @@ def batch_fitness_simulation(population, max_batch):
     working_dictionary = plates_dict
     backup_dictionary = backup_dict
     len_backup_initial = len(backup_dictionary)
-    evaluated = evaluated
+    evaluated_ind = evaluated
     initial_population = population.copy()
     total_fitnesses = []
     to_batch_up = []
@@ -48,7 +48,7 @@ def batch_fitness_simulation(population, max_batch):
         if individual in evaluated:
             pass
         else:
-            evaluated.append(individual)
+            evaluated_ind.append(individual)
         fitness = get_fitness(working_dictionary, individual)
         total_fitnesses.append((fitness,))  # fitness is stored as a tuple
                                             # for DEAP eaSimple requirements
