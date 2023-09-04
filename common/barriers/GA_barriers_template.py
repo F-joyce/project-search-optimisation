@@ -1,8 +1,22 @@
+TESTING = True
+
 import sys, os
-common_barrier_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common/barriers'
-common_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common'
-sys.path.insert(0, common_barrier_folder)
-sys.path.insert(0,common_folder)
+if TESTING:
+    root_folder = '/Users/fede/Desktop/project-search-optimisation'
+    sys.path.insert(0,root_folder)
+else:
+    root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
+    sys.path.insert(0,root_folder)
+
+import common
+common.TESTING = TESTING
+if TESTING:
+    name_process = 'supernova_dry.py'
+else:
+    name_process = 'supernova.py'
+from common.barriers import common_barriers_folder
+
+import os
 
 import shutil
 import random
@@ -11,7 +25,7 @@ import numpy
 import matplotlib.pyplot as plt
 
 from eaSimpleCustomised import eaSimple
-from dict_utils import dict_merger_files
+from dict_utils import save_dictionary_data_compress
 from deap import base
 from deap import creator
 from deap import tools
@@ -19,10 +33,10 @@ from deap import tools
 ###PATH GLOBALS#####################################
 experiment_path = os.getcwd()
 ###PROCESS RELATED GLOBALS##########################
-MAX_BATCH = 1
+MAX_BATCH = 5
 ###GENETIC ALGORITHM PARAMETERS#####################
-POPULATION = 2
-GENERATIONS = 2
+POPULATION = 50
+GENERATIONS = 5
 CX_PROBABILITY = 0.5
 MUT_PROBABILITY = 0.1
 BIT_MUT_PROBABILITY = 0.05
@@ -32,8 +46,11 @@ CX_TYPE = "cxTwoPoint"
 LOWEST_PERCENTAGE_SOIL = 40
 HIGHEST_PERCENTAGE_SOIL = 99
 ###DATA PARAMETERS##################################
-main_dict_path = f"{common_barrier_folder}/barriers_main_dict.gzip"
-working_dict_path = f"{experiment_path}/storage_dictionary.gzip"
+if TESTING:
+    main_dict_path = f"{common_barriers_folder}/testing/barriers_main_dict.gzip"
+else:
+    main_dict_path = f"{common_barriers_folder}/barriers_main_dict.gzip"
+####################################################
 
 
 def get_new_barriers(icls):
@@ -73,29 +90,34 @@ toolbox.register("mate", getattr(tools, CX_TYPE))
 toolbox.register("mutate", tools.mutFlipBit, indpb=BIT_MUT_PROBABILITY)
 toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
 
-path = experiment_path
 
-shutil.copyfile(main_dict_path, working_dict_path)
 
 for batch_number in range(MAX_BATCH):
-		shutil.rmtree(f"{path}/{batch_number}", ignore_errors=True)
-		os.mkdir(f"{path}/{batch_number}")
-		shutil.copyfile(f"{common_barrier_folder}/supernova.py", f"{path}/{batch_number}/supernova.py")
+		shutil.rmtree(f"{experiment_path}/{batch_number}", ignore_errors=True)
+		os.mkdir(f"{experiment_path}/{batch_number}")
+		shutil.copyfile(f"{common_barriers_folder}/{name_process}", f"{experiment_path}/{batch_number}/{name_process}")
 	
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
-shutil.copyfile(main_dict_path, f"{common_barrier_folder}/backup/last_working_main.gzip")
-dict_merger_files([main_dict_path,working_dict_path], main_dict_path)
+
+from barriers import barriers_dict, backup_dict, evaluated
+
+if not TESTING:
+    shutil.copyfile(main_dict_path, f"{common_barriers_folder}/backup/last_working_main.gzip")
+save_dictionary_data_compress(barriers_dict, main_dict_path)
+
+print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")
 
 gen = log.select('gen')
-max_fitness = log.select('max')
+best_fitness = log.select('max')
 
-plt.plot(gen, max_fitness)
+plt.plot(gen, best_fitness)
 plt.show()
 
 df_log = pd.DataFrame(log)
 
 df_log.to_csv("barriers_ga_statistics.csv", index = False)
-
+with open('total-num-eval.txt', 'w') as f:
+  f.write('%d' % len(evaluated))
 

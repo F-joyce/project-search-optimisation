@@ -3,8 +3,11 @@ import subprocess
 import sys
 import time
 from numpy import savetxt
-
-name_process = 'supernova.py'
+from common import TESTING
+if TESTING:
+    name_process = 'supernova_dry.py'
+else:
+    name_process = 'supernova.py'
 name_result_file = 'min.txt'
 name_conf_file = 'data.csv'
 
@@ -17,7 +20,7 @@ def evaluate_pop_fitness(pop):
         savetxt('data.csv', configuration, delimiter=',')
         # shell=True will open processes in the background 
         process = subprocess.Popen([sys.executable, name_process], 
-                                   shell=True) #TODO write in docs
+                                   shell=False) #TODO write in docs
         iteration += 1
     
     iteration = 0

@@ -82,7 +82,6 @@ toolbox.register("mate", getattr(tools, CX_TYPE))
 toolbox.register("mutate", tools.mutFlipBit, indpb=BIT_MUT_PROBABILITY)
 toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
 
-#shutil.copyfile(main_dict_path, working_dict_path)
 
 for batch_number in range(MAX_BATCH):
 		shutil.rmtree(f"{experiment_path}/file_{batch_number}", ignore_errors=True)
