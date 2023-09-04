@@ -1,6 +1,6 @@
 import keras
 import numpy as np
-from utils import denormalise
+from cnn_utils import denormalise
 
 m = keras.models.load_model("simple_CNN.keras")
 

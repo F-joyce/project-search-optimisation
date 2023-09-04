@@ -13,6 +13,7 @@ if TESTING:
     print("Initialising testing dictionaries")
     barriers_dict = {}
     backup_dict = {}
+    cnn_dictionary = {}
     evaluated = []
 else:
     print("Initialising barriers package, adding barriers path ...")

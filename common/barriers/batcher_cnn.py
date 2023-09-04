@@ -1,20 +1,21 @@
 import os
+import numpy as np  
 from threading import Thread
 from dict_utils import (save_dictionary_data_compress, 
                         get_fitness, add_to_dictionary_from_list)
 
 from barriers_evaluate import evaluate_pop_fitness
-from barriers import barriers_dict, backup_dict, evaluated
+import barriers
 from cnn_evaluate import cal_pop_fitness_CNN
 
-cnn_dict = {}
 cwd_path = os.getcwd()
 
 def batch_fitness_simulation(population, max_batch):
-    working_dictionary = barriers_dict
-    backup_dictionary = backup_dict
+    working_dictionary = barriers.barriers_dict
+    backup_dictionary = barriers.backup_dict
+    cnn_dict = barriers.cnn_dictionary
     len_backup_initial = len(backup_dictionary)
-    evaluated_ind = evaluated
+    evaluated_ind = barriers.evaluated
     initial_population = population.copy()
     total_fitnesses = []
     to_batch_up = []
@@ -25,9 +26,13 @@ def batch_fitness_simulation(population, max_batch):
     new_fitnesses_individuals = to_batch_up.copy()
     cnn_fitnesses = cal_pop_fitness_CNN(new_fitnesses_individuals)
     cnn_dict = add_to_dictionary_from_list(cnn_dict, new_fitnesses_individuals, cnn_fitnesses)
-    for k,v in cnn_dict.items():
-        if v < -1.45e-08:
-            to_batch_up.remove(k)
+    to_remove = []
+    for i in to_batch_up:
+        cnn_fitness = get_fitness(cnn_dict, i)
+        if cnn_fitness < -1.45e-08:
+            to_remove.append(i)
+    for remove in to_remove:
+        to_batch_up.remove(remove)
     while len(to_batch_up) > 0:
         print("There are %d unseen configuration to simulate" % len(to_batch_up))
         temp_list = []
@@ -52,13 +57,13 @@ def batch_fitness_simulation(population, max_batch):
         print("No new fitnesses to save")
 
     for individual in initial_population:
-        if individual in evaluated:
+        if individual in evaluated_ind:
             pass
         else:
             evaluated_ind.append(individual)
-        try:
-            fitness = get_fitness(working_dictionary, individual)
-        except KeyError:
+
+        fitness = get_fitness(working_dictionary, individual)
+        if not fitness:
             fitness = get_fitness(cnn_dict, individual)
         total_fitnesses.append((fitness,))  # fitness is stored as a tuple
                                             # for DEAP eaSimple requirements
