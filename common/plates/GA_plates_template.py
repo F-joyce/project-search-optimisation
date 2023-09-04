@@ -39,7 +39,10 @@ BIT_MUT_PROBABILITY = 0.05
 TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
 ###DATA PARAMETERS##################################
-main_dict_path = f"{common_plates_folder}/plates_main_dict.gzip"
+if TESTING:
+    main_dict_path = f"{common_plates_folder}/testing/plates_main_dict.gzip"
+else:
+    main_dict_path = f"{common_plates_folder}/plates_main_dict.gzip"
 ####################################################
 
 def get_new_plates(icls):
@@ -90,7 +93,8 @@ pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
 from plates import plates_dict, backup_dict, evaluated
 
-shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
+if not TESTING:
+    shutil.copyfile(main_dict_path, f"{common_plates_folder}/backup/last_working_main.gzip")
 save_dictionary_data_compress(plates_dict, main_dict_path)
 
 print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")

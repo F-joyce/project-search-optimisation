@@ -13,6 +13,7 @@ if TESTING:
     print("Initialising testing dictionaries")
     plates_dict = {}
     backup_dict = {}
+    evaluated = []
 else:
     print("Initialising plates package, adding plates path ...")
     common_plates_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation/common/plates'
@@ -24,3 +25,4 @@ else:
     print("Loading dictionaries from file")
     plates_dict = load_dictionary_compressed(f"{common_plates_folder}/plates_main_dict.gzip")
     backup_dict = {}
+    evaluated = []
