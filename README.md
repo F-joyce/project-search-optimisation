@@ -28,18 +28,69 @@ Barriers problem solved with a genetic algorithm will be used as an example, thi
 # Project Structure:
 ## The common package stores modules which are used by the implementations. 
 
-### Barriers and Plates packages
-The packages are organised in a very similar way, the common features will be described here. Then the modules which are specific to the packages in the next section.
+### Barriers and Plates similar modules
+
+The packages are organised in a very similar way, the common features will be described here. What changes is from where some methods are imported, for example the evaluate_pop_fitness will be imported from the barrier package for barriers and from plates package for plates and so on. Modules with different structure for different packages are explained in next sections.
+
 #### __init__
+
 Initialise the paths to a path or another depending if TESTING is on or off. TESTING should be changed manually directly in the templates (e.g. GA_barriers_template, and not in the __init__ files. However the paths are hard coded in the init files, they point to the specific remote machine used to make experiements, and to the local machine used to develop the modules. These should be changed to when a new machine is used. When TESTING is set to True, the search will happen but no simulation will start, instead a dummy fitness function is used for quick result. This is useful when checking the script are working as expected, for example when introducing some change in the common modules.
-#### barriers/plates_evaluate
 
-####
-####
-####
-####
+The init also load the main dictionaries from file or initialised an empty one when testing.
+Also initialised a backup_dictionary and an evaluated list, more on this on the batcher description.
 
-### Plates package
+#### batcher
+
+Batcher method <code>batch_fitness_simulation()</code> in brief return the fitnesses of a population of individuals to the eaSimple algorithm.
+1. It checks if the individuals are stored with a fitness in the dictionary (previously simulated)
+2. Add individuals still to be simulated in a list
+3. Chop up this list depending on the variable MAX_BATCH
+4. Send the smaller list to be evaluated by the evaluate function
+5. At the end of all the batches, updates the dictionaries and return the fitnesses for the individuals
+
+The main dictionaries(working_dictionaries) are retrieved from the packages (init files) to be updated and shared between modules.
+These are not saved until the end of the main script as loading and saving can be time consuming.
+The backup dictionary holds the individuals simulated in the run, this gets saved at each generation (batcher cycle) in the experiment folder, to avoid loss of fitnesses in case the main script get stuck or blocked for any reason. The script merge_dictionaries can be used to merge a stored dictionary and a backup one if something goes wrong.
+Evaluated is use to manually count how many samples the whole script simulates. This is useful with the cppn, as it does not store the evaluation numbers automatically.
+
+#### eaSimpleCustomised
+
+This should not be touched directly, it allow the DEAP library work with ANSYS. The fitness function is inserted manually here the batch_fitness_simulation. In this way it's possible to have manual control on how many processes get started on ANSYS and to retrieve from dictionary when available and all that is done in the batcher module.
+
+#### GA_templates
+
+The main script executed to run the experiments. This is what it does:
+1. TESTING set to True or False, run a real simulation or a dry-run(dummy fitness fucntion). This will change paths for dictionaries etc.
+2. Set the root folder of the project, this should be changed manually if the main folder is moved.
+3. Import the common package (__init__) and set the TESTING constant
+4. Import the path from the barrier package
+5. Set the parameters for the process (number of parallel simulation) 
+6. Set the parameters for the genetic algorithm
+7. Set the way individual in the population are initialised
+8. Folders are created and files copied as necessary
+9. Run the genetic algorithm with DEAP, some parameters can be changed only in this part, knowledge of DEAP library is required
+9. Save data and statistics at the end of the run and plot a graph (if not an experiment)
+
+## Barrier specific
+#### barriers_evaluate and supernova
+These modules work strictly together. 
+barriers_evaluate save the individual configuration as a data.csv file in a separate folder. 
+The number of folders correspond by the amount of simulation to be run in parallel and depends by the MAX_BATCH variable. 
+As each simulation takes up to 100GB of space in the disk, the MAX_BATCH has to be carefully selected (in the template. 
+Data.csv file is read by supernova, this is the script that launch the ANSYS simulator and is copied in each folder at the beginning at execution of the main module. It holds the parameters for the simulation to be run. The simulation is launched and supernova extract the resulting fitness from the simulation in a min.txt file that gets picked up by barriers_evaluate and returned to the batcher.
+
+## Plates specific
+#### plates_evaluate and solve_bullet
+As for barriers_evaluate and supernova.
+However some key differences:
+- solve_bullet is not copied to the folders
+- the configuration is saved as init_state.txt
+- the result of the simulation is saved as velocity.txt
+- a HEIGHT and WIDTH are necessary to specify the 2 dimesnions of the plates
+- the process won't open new windows but will run directly in the command prompt when the template is executed
+- the simulation don't take as much space, the limit here is set by CPU number more than storage
+#### customMutation
+This works as a flipbit mutation except preserving a specific set of bits to 1, this is necessary for the simulation, as represent the point of impact of the bullet.
 The subfolders in common are the common files needed by GA or CPPN no matter
 what is the variation, this allows to makes changes in one place, while 
 having only the script to be modified to make experiments in the "namefolder"
@@ -80,7 +131,7 @@ Testing on the complete execution is now manually explored. Would be useful to a
 
 
 
-
+# Issues with RBFOpt
 The Project has a partial implementation of RBFOpt this is a:
 > RBFOpt is a Python library for black-box optimization 
 >(also known as derivative-free optimization).

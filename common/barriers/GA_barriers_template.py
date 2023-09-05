@@ -1,4 +1,5 @@
 TESTING = True
+experiment_path = os.getcwd()
 
 import sys, os
 if TESTING:
@@ -30,11 +31,12 @@ from deap import base
 from deap import creator
 from deap import tools
 
-###PATH GLOBALS#####################################
-experiment_path = os.getcwd()
 ###PROCESS RELATED GLOBALS##########################
+
 MAX_BATCH = 5
+
 ###GENETIC ALGORITHM PARAMETERS#####################
+
 POPULATION = 50
 GENERATIONS = 5
 CX_PROBABILITY = 0.5
@@ -42,14 +44,19 @@ MUT_PROBABILITY = 0.1
 BIT_MUT_PROBABILITY = 0.05
 TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
+
 ###INITIALISATION PARAMETERS########################
+
 LOWEST_PERCENTAGE_SOIL = 40
 HIGHEST_PERCENTAGE_SOIL = 99
+
 ###DATA PARAMETERS##################################
+
 if TESTING:
     main_dict_path = f"{common_barriers_folder}/testing/barriers_main_dict.gzip"
 else:
     main_dict_path = f"{common_barriers_folder}/barriers_main_dict.gzip"
+
 ####################################################
 
 
@@ -100,7 +107,7 @@ for batch_number in range(MAX_BATCH):
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
-
+# the line below should stay at this point, to get the updated dicts/lists
 from barriers import barriers_dict, backup_dict, evaluated
 
 if not TESTING:
