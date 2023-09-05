@@ -11,7 +11,7 @@ if TESTING:
     sys.path.insert(0, common_folder)
 
     print("Initialising testing dictionaries")
-    barriers_dict = {}
+    barriers_dict = {"test":1, "test2": 2}
     backup_dict = {}
     evaluated = []
 else:

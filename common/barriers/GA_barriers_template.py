@@ -115,6 +115,8 @@ if not TESTING:
 save_dictionary_data_compress(barriers_dict, main_dict_path)
 
 print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")
+if TESTING:
+    assert(len(barriers_dict) == (len(backup_dict)+2)), "The size of the dictionaries do not correspond to what is expected"
 
 gen = log.select('gen')
 best_fitness = log.select('max')
