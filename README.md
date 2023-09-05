@@ -1,22 +1,21 @@
 # Description of Project
----
+
 You are in the root folder of the "Barriers Search Optimisation Project".
----
+
 The Project implements two different search optimisation techniques:
 - Genetic Algorithm (GA) using DEAP python library
 - Compositional Pattern Producing Network (CPPN) using NEAT python library
----
+
 The Problems for which solution were found are two:
 - find configurations for simulated anti-sismic barriers (BARRIERS)
 - find configuration of plates to reduce velocity in simulated bullet impact (PLATES)
-TODO:**correct description or extend it**
----
+
 The GA was implemented to work with both BARRIERS and PLATES.
 
 The CPPNs was implemented to only work with BARRIERS.
----
 
-# Quick start usage
+
+# Quick start
 Barriers problem solved with a genetic algorithm will be used as an example, this is an actual run and not a ""dry-run". 
 1. Go to the genetic-algorithm folder, copy GA_barries_template or GA_barriers_experiment_templates for multiple run. 
 2. Paste it in any folder in the system. 
@@ -25,10 +24,10 @@ Barriers problem solved with a genetic algorithm will be used as an example, thi
 5. At the command prompt (it should have appeared) write <code>python Ga_barriers_template.py</code>
 6. The script will start. After path initialisation the ga will open a bunch of script running the simulation. In the command prompt at some point will appear <code>Waiting for simulation to output results since X minutes</code>. If X is larger than 7 minutes, probably one of the scripts got stuck, this can usually be pushed forward by finding a stuck script and pressing Return ***TODO*** add screenshot of what this will look like.
 
-# Project Structure:
-## The common package stores modules which are used by the implementations. 
+# Project Structure
+The common package stores modules which are used by the implementations. 
 
-### Barriers and Plates similar modules
+## Barriers and Plates similar modules
 
 The packages are organised in a very similar way, the common features will be described here. What changes is from where some methods are imported, for example the evaluate_pop_fitness will be imported from the barrier package for barriers and from plates package for plates and so on. Modules with different structure for different packages are explained in next sections.
 
@@ -71,7 +70,7 @@ The main script executed to run the experiments. This is what it does:
 9. Run the genetic algorithm with DEAP, some parameters can be changed only in this part, knowledge of DEAP library is required
 9. Save data and statistics at the end of the run and plot a graph (if not an experiment)
 
-## Barrier specific
+## Barriers specific
 #### barriers_evaluate and supernova
 These modules work strictly together. 
 barriers_evaluate save the individual configuration as a data.csv file in a separate folder. 
@@ -89,14 +88,16 @@ However some key differences:
 - a HEIGHT and WIDTH are necessary to specify the 2 dimesnions of the plates
 - the process won't open new windows but will run directly in the command prompt when the template is executed
 - the simulation don't take as much space, the limit here is set by CPU number more than storage
+#### utils
+This is a simple reshaping of the individual configuration, as it's initialised as a bitstring, but the simulator needs a 2 dimensional array
 #### customMutation
 This works as a flipbit mutation except preserving a specific set of bits to 1, this is necessary for the simulation, as represent the point of impact of the bullet.
 The subfolders in common are the common files needed by GA or CPPN no matter
 what is the variation, this allows to makes changes in one place, while 
 having only the script to be modified to make experiments in the "namefolder"
-TODO: **decide on a intuitive structure for the project and add description**
 
 ### Script tools
+***TODO*** to add
 
 # Refactoring ideas
 ### Switch to JSON
@@ -117,27 +118,14 @@ Testing on the complete execution is now manually explored. Would be useful to a
 - the dictionaries has been updated with the exact number of new fitnesses found
 - ***TODO*** add more
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Issues with RBFOpt
 The Project has a partial implementation of RBFOpt this is a:
 > RBFOpt is a Python library for black-box optimization 
 >(also known as derivative-free optimization).
+
 The partial implementation fails when using more than a small number of
-maximum calls of the original function as it needs two different pieces:
+maximum calls of the original function as it needs two different libraries:
 1 - Ipoptpy
 2 - Bonim solver
-The author was unable to install these on the Windows machine used for 
+I was unable to install these on the Windows machine used for 
 the research. 
