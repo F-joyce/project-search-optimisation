@@ -32,6 +32,10 @@ import neat
 from shared import eval_mono_image, eval_gray_image, eval_color_image
 
 from batcher import batch_fitness_simulation
+from dict_utils import dictionary_data_compress
+from barriers import backup_dict
+
+assert(2==3), "STOP"
 
 width, height = 15, 30
 full_scale = 1
@@ -178,6 +182,13 @@ def run():
     float_image = np.array(image, dtype=np.float32) / 255.0
     ne.archive.append(float_image)
     visualise.plot_stats(stats, ylog=False, view=True)
+
+    from barriers import barriers_dict, backup_dict, evaluated
+
+    if not TESTING:
+        shutil.copyfile(main_dict_path, f"{common_barriers_folder}/backup/last_working_main.gzip")
+    save_dictionary_data_compress(barriers_dict, main_dict_path)
+
 
 
 
