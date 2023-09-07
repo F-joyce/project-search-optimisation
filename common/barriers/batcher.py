@@ -1,4 +1,5 @@
 import os
+import numpy as np
 from threading import Thread
 from dict_utils import (save_dictionary_data_compress, 
                         get_fitness, add_to_dictionary_from_list)
@@ -45,6 +46,8 @@ def batch_fitness_simulation(population, max_batch):
         print("No new fitnesses to save")
 
     for individual in initial_population:
+        if isinstance(individual, np.ndarray):
+            individual = list(individual)
         if individual in evaluated:
             pass
         else:

@@ -1,26 +1,48 @@
+import sys, os
+
+TESTING = True
+experiment_path = os.getcwd()
+
+if TESTING:
+    root_folder = '/Users/fede/Desktop/project-search-optimisation'
+    sys.path.insert(0,root_folder)
+else:
+    root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
+    sys.path.insert(0,root_folder)
+
+import common
+common.TESTING = TESTING
+if TESTING:
+    name_process = 'supernova_dry.py'
+else:
+    name_process = 'supernova.py'
+
+from common.barriers import common_barriers_folder
+import cppn
 import os
 import random
 import shutil
-import visualise
 from multiprocessing import Pool
+import visualise
 
 import numpy as np
 from PIL import Image
 
 import neat
-from common import eval_mono_image, eval_gray_image, eval_color_image
+from shared import eval_mono_image, eval_gray_image, eval_color_image
 
-from CNN_eaSimple import batch_fitness_simulation
+from batcher import batch_fitness_simulation
 
 width, height = 15, 30
 full_scale = 1
 MAX_BATCH = 10
 
 path = os.getcwd()
-for loopar in range(MAX_BATCH):
-		shutil.rmtree(path+'/'+str(loopar), ignore_errors=True)
-		os.mkdir(path+'/'+str(loopar))
-		shutil.copyfile(path+'/supernova.py', path+'/'+str(loopar)+'/supernova.py')
+
+for batch_number in range(MAX_BATCH):
+		shutil.rmtree(f"{experiment_path}/{batch_number}", ignore_errors=True)
+		os.mkdir(f"{experiment_path}/{batch_number}")
+		shutil.copyfile(f"{common_barriers_folder}/{name_process}", f"{experiment_path}/{batch_number}/{name_process}")
 
 
 # evaluate_lowres() calls function to create new images
@@ -126,42 +148,37 @@ def run():
     pop.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
-    checkpoint = neat.Checkpointer()
-    pop.add_reporter(checkpoint)
 
-    while 1:
-        pop.run(ne.evaluate, 50)
+    
+    pop.run(ne.evaluate)
 
-        winner = stats.best_genome()
-        if ne.scheme == 'gray':
-            image = eval_gray_image(winner, config, full_scale * width, full_scale * height)
-        elif ne.scheme == 'color':
-            image = eval_color_image(winner, config, full_scale * width, full_scale * height)
-        elif ne.scheme == 'mono':
-            image = eval_mono_image(winner, config, full_scale * width, full_scale * height)
-        else:
-            raise Exception('Unexpected scheme: {0!r}'.format(ne.scheme))
+    winner = stats.best_genome()
+    if ne.scheme == 'gray':
+        image = eval_gray_image(winner, config, full_scale * width, full_scale * height)
+    elif ne.scheme == 'color':
+        image = eval_color_image(winner, config, full_scale * width, full_scale * height)
+    elif ne.scheme == 'mono':
+        image = eval_mono_image(winner, config, full_scale * width, full_scale * height)
+    else:
+        raise Exception('Unexpected scheme: {0!r}'.format(ne.scheme))
 
-        im = np.clip(np.array(image), 0, 255).astype(np.uint8)
-        im = ne.image_from_array(im)
-        im.save('winning-novelty-{0:06d}.png'.format(pop.generation))
+    im = np.clip(np.array(image), 0, 255).astype(np.uint8)
+    im = ne.image_from_array(im)
+    im.save('winning-novelty-{0:06d}.png'.format(pop.generation))
 
-        if ne.scheme == 'gray':
-            image = eval_gray_image(winner, config, width, height)
-        elif ne.scheme == 'color':
-            image = eval_color_image(winner, config, width, height)
-        elif ne.scheme == 'mono':
-            image = eval_mono_image(winner, config, width, height)
-        else:
-            raise Exception('Unexpected scheme: {0!r}'.format(ne.scheme))
+    if ne.scheme == 'gray':
+        image = eval_gray_image(winner, config, width, height)
+    elif ne.scheme == 'color':
+        image = eval_color_image(winner, config, width, height)
+    elif ne.scheme == 'mono':
+        image = eval_mono_image(winner, config, width, height)
+    else:
+        raise Exception('Unexpected scheme: {0!r}'.format(ne.scheme))
 
-        float_image = np.array(image, dtype=np.float32) / 255.0
-        ne.archive.append(float_image)
-        stats.save()
+    float_image = np.array(image, dtype=np.float32) / 255.0
+    ne.archive.append(float_image)
+    visualise.plot_stats(stats, ylog=False, view=True)
 
-        visualize.plot_stats(stats, ylog=False, view=True)
-        visualize.plot_species(stats, view=True)
-        
 
 
 if __name__ == '__main__':
