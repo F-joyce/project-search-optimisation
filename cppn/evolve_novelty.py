@@ -1,6 +1,6 @@
 import sys, os
 
-TESTING = True
+TESTING = False
 experiment_path = os.getcwd()
 
 if TESTING:
@@ -32,14 +32,16 @@ import neat
 from shared import eval_mono_image, eval_gray_image, eval_color_image
 
 from batcher import batch_fitness_simulation
-from dict_utils import dictionary_data_compress
-from barriers import backup_dict
+from dict_utils import save_dictionary_data_compress
 
-assert(2==3), "STOP"
+if TESTING:
+    main_dict_path = f"{common_barriers_folder}/testing/barriers_main_dict.gzip"
+else:
+    main_dict_path = f"{common_barriers_folder}/barriers_main_dict.gzip"
 
 width, height = 15, 30
 full_scale = 1
-MAX_BATCH = 10
+MAX_BATCH = 8
 
 path = os.getcwd()
 
@@ -154,7 +156,7 @@ def run():
     pop.add_reporter(stats)
 
     
-    pop.run(ne.evaluate)
+    pop.run(ne.evaluate, 50)
 
     winner = stats.best_genome()
     if ne.scheme == 'gray':
@@ -189,6 +191,11 @@ def run():
         shutil.copyfile(main_dict_path, f"{common_barriers_folder}/backup/last_working_main.gzip")
     save_dictionary_data_compress(barriers_dict, main_dict_path)
 
+    with open('total-num-eval.txt', 'w') as f:
+        f.write('%d' % len(evaluated))
+
+    print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")
+    
 
 
 
