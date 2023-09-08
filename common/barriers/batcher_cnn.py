@@ -5,17 +5,17 @@ from dict_utils import (save_dictionary_data_compress,
                         get_fitness, add_to_dictionary_from_list)
 
 from barriers_evaluate import evaluate_pop_fitness
-import barriers
+from barriers import barriers_dict, backup_dict, evaluated, cnn_dictionary
 from cnn_evaluate import cal_pop_fitness_CNN
 
 cwd_path = os.getcwd()
 
-def batch_fitness_simulation(population, max_batch):
-    working_dictionary = barriers.barriers_dict
-    backup_dictionary = barriers.backup_dict
-    cnn_dict = barriers.cnn_dictionary
+def batch_fitness_simulation(population, max_batch, threshold):
+    working_dictionary = barriers_dict
+    backup_dictionary = backup_dict
+    cnn_dict = cnn_dictionary
     len_backup_initial = len(backup_dictionary)
-    evaluated_ind = barriers.evaluated
+    evaluated_ind = evaluated
     initial_population = population.copy()
     total_fitnesses = []
     to_batch_up = []
@@ -29,7 +29,7 @@ def batch_fitness_simulation(population, max_batch):
     to_remove = []
     for i in to_batch_up:
         cnn_fitness = get_fitness(cnn_dict, i)
-        if cnn_fitness < -1.45e-08:
+        if cnn_fitness < threshold:
             to_remove.append(i)
     for remove in to_remove:
         to_batch_up.remove(remove)
@@ -59,7 +59,7 @@ def batch_fitness_simulation(population, max_batch):
     for individual in initial_population:
         if isinstance(individual, np.ndarray):
             individual = list(individual)
-        if individual in evaluated_ind:
+        if individual in evaluated:
             pass
         else:
             evaluated_ind.append(individual)

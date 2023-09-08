@@ -26,4 +26,5 @@ else:
     print("Loading dictionaries from file")
     barriers_dict = load_dictionary_compressed(f"{common_barriers_folder}/barriers_main_dict.gzip")
     backup_dict = {}
+    cnn_dictionary = {}
     evaluated = []

@@ -1,23 +1,4 @@
-TESTING = True
-
 import sys, os
-if TESTING:
-    root_folder = '/Users/fede/Desktop/project-search-optimisation'
-    sys.path.insert(0,root_folder)
-else:
-    root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
-    sys.path.insert(0,root_folder)
-
-import common
-common.TESTING = TESTING
-if TESTING:
-    name_process = 'supernova_dry.py'
-else:
-    name_process = 'supernova.py'
-from common.barriers import common_barriers_folder
-
-import os
-
 import shutil
 import random
 import pandas as pd
@@ -29,6 +10,25 @@ from dict_utils import save_dictionary_data_compress
 from deap import base
 from deap import creator
 from deap import tools
+
+TESTING = True
+
+if TESTING:
+    root_folder = '/Users/fede/Desktop/project-search-optimisation'
+    name_process = 'supernova_dry.py'
+else:
+    root_folder = 'C:/Users/Administrator/Desktop/project-search-optimisation'
+    name_process = 'supernova.py'
+
+sys.path.insert(0,root_folder)
+import common
+common.TESTING = TESTING
+
+from common.barriers import common_barriers_folder
+if TESTING:
+    main_dict_path = f"{common_barriers_folder}/testing/barriers_main_dict.gzip"
+else:
+    main_dict_path = f"{common_barriers_folder}/barriers_main_dict.gzip"
 
 ###PATH GLOBALS#####################################
 experiment_path = os.getcwd()
@@ -45,11 +45,8 @@ CX_TYPE = "cxTwoPoint"
 ###INITIALISATION PARAMETERS########################
 LOWEST_PERCENTAGE_SOIL = 40
 HIGHEST_PERCENTAGE_SOIL = 99
-###DATA PARAMETERS##################################
-if TESTING:
-    main_dict_path = f"{common_barriers_folder}/testing/barriers_main_dict.gzip"
-else:
-    main_dict_path = f"{common_barriers_folder}/barriers_main_dict.gzip"
+###CNN PARAMETERS##################################
+THRESHOLD_CNN = -1.45e-08
 ####################################################
 
 
@@ -76,7 +73,7 @@ def main(p_size = POPULATION, gen=GENERATIONS):
     stats.register
 
     pop, log = eaSimple(MAX_BATCH,  pop, toolbox, cxpb=CX_PROBABILITY, mutpb=MUT_PROBABILITY, ngen=gen,
-                                   stats=stats, halloffame=hof, verbose=False)
+                                   stats=stats, halloffame=hof, verbose=False, threshold=THRESHOLD_CNN)
 
     return pop, log, hof
 

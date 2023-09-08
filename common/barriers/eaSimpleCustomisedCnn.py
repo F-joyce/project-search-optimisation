@@ -2,7 +2,7 @@ from deap.algorithms import tools, varAnd
 from batcher_cnn import batch_fitness_simulation
 
 def eaSimple(max_batch, population, toolbox, cxpb, mutpb, ngen, stats=None,
-             halloffame=None, verbose=__debug__):
+             halloffame=None, verbose=__debug__, threshold=-1.45e-08):
     """This algorithm reproduce the simplest evolutionary algorithm as
     presented in chapter 7 of [Back2000]_.
 
@@ -67,7 +67,7 @@ def eaSimple(max_batch, population, toolbox, cxpb, mutpb, ngen, stats=None,
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in population if not ind.fitness.valid]
     
-    fitnesses = batch_fitness_simulation(invalid_ind, max_batch)
+    fitnesses = batch_fitness_simulation(invalid_ind, max_batch, threshold)
 
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
