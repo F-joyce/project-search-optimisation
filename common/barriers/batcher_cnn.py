@@ -57,6 +57,8 @@ def batch_fitness_simulation(population, max_batch):
         print("No new fitnesses to save")
 
     for individual in initial_population:
+        if isinstance(individual, np.ndarray):
+            individual = list(individual)
         if individual in evaluated_ind:
             pass
         else:
