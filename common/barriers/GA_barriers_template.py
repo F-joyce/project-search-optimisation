@@ -5,7 +5,7 @@ import pandas as pd
 import numpy
 import matplotlib.pyplot as plt
 
-from eaSimpleCustomisedCnn import eaSimple
+from eaSimpleCustomised import eaSimple
 from dict_utils import save_dictionary_data_compress
 from deap import base
 from deap import creator

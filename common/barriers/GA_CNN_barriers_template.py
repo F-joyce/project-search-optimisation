@@ -97,7 +97,7 @@ for batch_number in range(MAX_BATCH):
 
 pop, log, hof = main(p_size = POPULATION, gen = GENERATIONS)
 
-
+# the line below should stay at this point, to get the updated dicts/lists
 from barriers import barriers_dict, backup_dict, evaluated
 
 if not TESTING:
@@ -105,6 +105,8 @@ if not TESTING:
 save_dictionary_data_compress(barriers_dict, main_dict_path)
 
 print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")
+if TESTING:
+    assert(len(barriers_dict) == (len(backup_dict)+2)), "The size of the dictionaries do not correspond to what is expected"
 
 gen = log.select('gen')
 best_fitness = log.select('max')
