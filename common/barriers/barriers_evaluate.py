@@ -17,7 +17,7 @@ def evaluate_pop_fitness(pop):
     fitness = []
     for configuration in pop:
         os.chdir(f"{working_dir_path}/{iteration}")
-        savetxt('data.csv', configuration, delimiter=',')
+        savetxt(name_conf_file, configuration, delimiter=',')
         # shell=True should open processes in the background, but doesn't
         process = subprocess.Popen([sys.executable, name_process], 
                                    shell=False) #TODO write in docs
