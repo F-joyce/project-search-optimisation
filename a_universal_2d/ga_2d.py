@@ -9,17 +9,20 @@ from threading import Thread
 import matplotlib.pyplot as plt
 from deap.algorithms import tools, varAnd
 
+from modules import function_that_builds_configuration_global as function_that_builds_configuration
 
 from dict_utils import get_fitness, add_to_dictionary_from_list, save_dictionary_data_compress, load_dictionary_compressed
 from deap import base, creator, tools
+import config
+
 #configuration variables
 ###PATH GLOBALS#####################################
 experiment_path = os.getcwd()
 ###PROCESS RELATED GLOBALS##########################
-MAX_BATCH = 100
+MAX_BATCH = config.MAX_BATCH
 ###GENETIC ALGORITHM PARAMETERS#####################
-POPULATION = 100
-GENERATIONS = 30
+POPULATION = config.POPULATION
+GENERATIONS = 5
 CX_PROBABILITY = 0.7
 MUT_PROBABILITY = 0.15
 BIT_MUT_PROBABILITY = 0.1
@@ -27,9 +30,9 @@ TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
 
 parameters = 500
-nmaterials = 5
+nmaterials = 6
 shape = (25,20)
-percentages_ranges = [(80,90),(0,10),(0,10),(0,10),(0,10)]#,(0,10)]
+percentages_ranges = [(80,90),(0,10),(0,10),(0,10),(0,10),(0,10)]
 
 name_conf_file = "data.txt"
 name_result_file = "min.txt"
@@ -224,7 +227,6 @@ def function_that_builds_configuration(icls):
     new_configuration = icls(array_shaped.tolist())
     return new_configuration
 
-
 def function_that_evaluate_population(pop):
     iteration = 0
     working_dir_path = os.getcwd()
@@ -264,8 +266,8 @@ def function_that_evaluate_population(pop):
                     file.close()
 
             time.sleep(0.001)  # probably to avoid issues ?
-        os.remove(f'{working_dir_path}/{iteration}/processes/{name_result_file}')
-        os.remove(f'{working_dir_path}/{iteration}/processes/{name_conf_file}') 
+        os.remove(f'{working_dir_path}/processes/{iteration}/{name_result_file}')
+        os.remove(f'{working_dir_path}/processes/{iteration}/{name_conf_file}') 
         iteration += 1
     os.chdir(working_dir_path)
     return fitness
@@ -321,6 +323,10 @@ def function_that_batches(population, max_batch):
 
 def main_function_that_run_ga(p_size = POPULATION, gen=GENERATIONS):
     pop = toolbox.population(n=p_size)
+    pop2 = toolbox.seeded_pop(n=10)
+
+    pop[:10] = pop2[:10]
+
     hof = tools.HallOfFame(1)
 
     stats = tools.Statistics(lambda ind: ind.fitness.values)
@@ -343,6 +349,12 @@ if __name__ == "__main__":
     toolbox = base.Toolbox()
     toolbox.register("individual", function_that_builds_configuration, creator.Individual)
     toolbox.register("population", tools.initRepeat, list, toolbox.individual)
+
+    from test_glob import function_that_build_seed
+
+    toolbox.register("seeded_ind", function_that_build_seed, creator.Individual)
+    toolbox.register("seeded_pop", tools.initRepeat, list, toolbox.seeded_ind)
+
     toolbox.register("mate", getattr(tools, CX_TYPE))
     toolbox.register("mutate", mutSwapMaterialCustom, indpb=BIT_MUT_PROBABILITY)
     toolbox.register("select", tools.selTournament, tournsize=TOURN_SIZE)
@@ -351,7 +363,7 @@ if __name__ == "__main__":
 
     pop, log, hof = main_function_that_run_ga(p_size = POPULATION, gen = GENERATIONS)
 
-    shutil.copyfile(dummy_dict_path, f"{experiment_path}/backup/last_working_main.gzip")
+    shutil.copyfile(dummy_dict_path, f"{experiment_path}/backup/last_working_dummy.gzip")
     save_dictionary_data_compress(barriers_dict, dummy_dict_path)
 
     gen = log.select('gen')

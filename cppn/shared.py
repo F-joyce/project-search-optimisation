@@ -1,5 +1,5 @@
 import neat
-
+import numpy as np
 
 def eval_mono_image(genome, config, width, height):
     net = neat.nn.FeedForwardNetwork.create(genome, config)
@@ -11,6 +11,29 @@ def eval_mono_image(genome, config, width, height):
             x = -2.0 + 4.0 * c / (width - 1)
             output = net.activate([x, y])
             gray = 255 if output[0] > 0.0 else 0
+            row.append(gray)
+        image.append(row)
+
+    return image
+
+def eval_scale_image(genome, config, width, height, nmaterials=6):
+    net = neat.nn.FeedForwardNetwork.create(genome, config)
+    image = []
+    categories = np.linspace(0,255, num=nmaterials)
+    categories = [int(x) for x in categories]
+    for r in range(height):
+        y = -2.0 + 4.0 * r / (height - 1)
+        row = []
+        for c in range(width):
+            x = -2.0 + 4.0 * c / (width - 1)
+            output = net.activate([x, y])
+            pixel = int(round((output[0] + 1.0) * 255 / 2.0))
+            for i,value in enumerate(categories):
+                if i == len(categories) - 1:
+                    gray = 255
+                elif pixel >= value and pixel < categories[i+1]:
+                    gray = max(0, min(255, value))
+                    break
             row.append(gray)
         image.append(row)
 

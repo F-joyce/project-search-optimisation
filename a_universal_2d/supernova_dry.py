@@ -2,7 +2,7 @@ import numpy as np
 
 Bshape=np.loadtxt('./data.txt')
 
-print(Bshape)
+#print(Bshape)
 
 flat = Bshape.flatten()
 sum_ = np.sum(flat)

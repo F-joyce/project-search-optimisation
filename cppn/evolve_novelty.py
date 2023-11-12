@@ -1,6 +1,6 @@
 import sys, os
 
-TESTING = False
+TESTING = True
 experiment_path = os.getcwd()
 
 if TESTING:
@@ -29,7 +29,7 @@ import numpy as np
 from PIL import Image
 
 import neat
-from shared import eval_mono_image, eval_gray_image, eval_color_image
+from shared import eval_gray_image, eval_color_image, eval_scale_image as eval_mono_image
 
 from batcher import batch_fitness_simulation
 from dict_utils import save_dictionary_data_compress
@@ -156,7 +156,7 @@ def run():
     pop.add_reporter(stats)
 
     
-    pop.run(ne.evaluate, 50)
+    pop.run(ne.evaluate, 20)
 
     winner = stats.best_genome()
     if ne.scheme == 'gray':
