@@ -1,4 +1,7 @@
 import random
+import config
+
+nmaterials = config.nmaterials
 
 ######################################
 # GA Custom Mutation                 #
@@ -40,9 +43,9 @@ def mutSwapMaterialCustom(individual, indpb):
     This function uses the :func:`~random.random` function from the python base
     :mod:`random` module.
     """
-    list_ = [float(x) for x in range(nmaterials)]
+    list_ = [x for x in range(nmaterials)]
     for i in range(len(individual)):
-        for ii in range(len(i)):
+        for ii in range(len(individual[i])):
             if random.random() < indpb:
                 temp_list = list_.copy()
                 temp_list.remove(individual[i][ii])

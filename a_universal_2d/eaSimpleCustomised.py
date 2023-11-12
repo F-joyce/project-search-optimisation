@@ -1,54 +1,5 @@
 from deap.algorithms import tools, varAnd
-from ga_2d import function_that_batches as batch_fitness_simulation
-
-def function_that_batches(population, max_batch):
-    working_dictionary = barriers_dict
-    backup_dictionary = backup_dict
-    len_backup_initial = len(backup_dictionary)
-    evaluated_ind = evaluated
-    initial_population = population.copy()
-    total_fitnesses = []
-    to_batch_up = []
-    for individual in population:
-        if get_fitness(working_dictionary, individual) == False:
-            to_batch_up.append(individual)
-    new_fitnesses = []
-    new_fitnesses_individuals = to_batch_up.copy()
-    while len(to_batch_up) > 0:
-        print("There are %d unseen configuration to simulate" % len(to_batch_up))
-        temp_list = []
-        while (len(temp_list) < max_batch) and (len(to_batch_up) > 0):
-            temp_list.append(to_batch_up.pop(0))
-        fitnesses_to_append = function_that_evaluate_population(temp_list)
-        for fitness_value in fitnesses_to_append:
-            new_fitnesses.append(fitness_value)
-
-    print("The new fitnesses put in a list are: ", len(new_fitnesses))
-    print("The individual to be calculated were: ", len(new_fitnesses_individuals))
-
-    working_dictionary = add_to_dictionary_from_list(working_dictionary, new_fitnesses_individuals, new_fitnesses)
-    backup_dictionary = add_to_dictionary_from_list(backup_dictionary, new_fitnesses_individuals, new_fitnesses)
-    if len(backup_dictionary) > len_backup_initial:
-        save = Thread(target=save_dictionary_data_compress, args=(backup_dictionary, f"{experiment_path}/backup_dict.gzip"))
-        print("Opened Thread to save backup dictionary")
-        save.start()
-        save.join()
-        print(f"Dictionary saved as backup_dict.gzip with {len(backup_dictionary)} configurations")
-    else:
-        print("No new fitnesses to save")
-
-    for individual in initial_population:
-        if isinstance(individual, np.ndarray):
-            individual = list(individual)
-        if individual in evaluated:
-            pass
-        else:
-            evaluated_ind.append(individual)
-        fitness = get_fitness(working_dictionary, individual)
-        total_fitnesses.append((fitness,))  # fitness is stored as a tuple
-                                            # for DEAP eaSimple requirements
-
-    return total_fitnesses
+from evaluation import function_that_batches
 
 def eaSimple(max_batch, population, toolbox, cxpb, mutpb, ngen, stats=None,
              halloffame=None, verbose=__debug__):
@@ -116,7 +67,7 @@ def eaSimple(max_batch, population, toolbox, cxpb, mutpb, ngen, stats=None,
     # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in population if not ind.fitness.valid]
     
-    fitnesses = batch_fitness_simulation(invalid_ind, max_batch)
+    fitnesses = function_that_batches(invalid_ind, max_batch)
 
     for ind, fit in zip(invalid_ind, fitnesses):
         ind.fitness.values = fit
@@ -139,7 +90,7 @@ def eaSimple(max_batch, population, toolbox, cxpb, mutpb, ngen, stats=None,
 
         # Evaluate the individuals with an invalid fitness
         invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        fitnesses = batch_fitness_simulation(invalid_ind, max_batch)
+        fitnesses = function_that_batches(invalid_ind, max_batch)
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
