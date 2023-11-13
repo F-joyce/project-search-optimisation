@@ -12,3 +12,5 @@ glob("[0-9][0-9]/")
 sandbox/
 .DS_Store
 *.json
+processes/
+play-init/

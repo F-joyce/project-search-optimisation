@@ -11,9 +11,9 @@ TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
 
 parameters = 500
-nmaterials = 6
+nmaterials = 2
 shape = (25,20) # vertical,horizontal
-percentages_ranges = [(80,90),(0,10),(0,10),(0,10),(0,10),(0,10)]
+percentages_ranges = [(80,90),(0,10)]#,(0,10),(0,10),(0,10),(0,10)]
 
 name_conf_file = "data.txt"
 name_result_file = "min.txt"
