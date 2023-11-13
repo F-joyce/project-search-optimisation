@@ -6,6 +6,8 @@ __pycache__/
 *.png
 *.jpeg
 *.jpg
+*.svg
+*.txt
 glob("[0-9]/")
 glob("[0-9][0-9]/")
 .vscode/

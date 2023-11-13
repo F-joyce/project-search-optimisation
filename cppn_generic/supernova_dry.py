@@ -1,6 +1,6 @@
 import numpy as np
 
-Bshape=np.loadtxt('./data.csv')
+Bshape=np.loadtxt('./data.txt')
 
 sample_fitness = -1.40e-08
 

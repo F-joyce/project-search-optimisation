@@ -1,7 +1,8 @@
 import neat
 import numpy as np
+import config
 
-nmaterials = 6
+nmaterials = config.nmaterials
 
 categories = np.linspace(0,255, num=nmaterials)
 categories = [int(x) for x in categories]
