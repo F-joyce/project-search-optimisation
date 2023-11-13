@@ -100,13 +100,13 @@ if __name__ == "__main__":
     gen = log.select('gen')
     max_fitness = log.select('max')
 
-    #plt.plot(gen, max_fitness)
-    #plt.show()
+    plt.plot(gen, max_fitness)
+    plt.savefig()
 
     df_log = pd.DataFrame(log)
 
     df_log.to_csv("barriers_ga_statistics.csv", index = False)
 
-    print(f"Initial length: main dict {initial_main_dict_len}, backup {initial_backup_len}, eval list {initial_evaluated}")
-    print(f"Final length: main dict {len(config.barriers_dict)}, backup {len(config.backup_dict)}, eval list {len(config.evaluated)}")
-    print(f"New added to main: {len(config.barriers_dict) - initial_main_dict_len}")
+    #print(f"Initial length: main dict {initial_main_dict_len}, backup {initial_backup_len}, eval list {initial_evaluated}")
+    #print(f"Final length: main dict {len(config.barriers_dict)}, backup {len(config.backup_dict)}, eval list {len(config.evaluated)}")
+    #print(f"New added to main: {len(config.barriers_dict) - initial_main_dict_len}")

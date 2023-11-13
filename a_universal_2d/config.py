@@ -23,6 +23,9 @@ dummy_dict_path = f"{experiment_path}/barriers_dummy_dict.gzip"
 
 seeded = False
 
-barriers_dict = load_dictionary_compressed(f"{experiment_path}/barriers_dummy_dict.gzip")
+try:
+    barriers_dict = load_dictionary_compressed(f"{experiment_path}/barriers_dummy_dict.gzip")
+except:
+    barriers_dict = {}
 backup_dict = {}
 evaluated = []
