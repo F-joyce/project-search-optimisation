@@ -118,8 +118,6 @@ def run():
 
     ne = NoveltyEvaluator(1)
 
-    config.output_nodes = 1
-
     pop = neat.Population(config)
 
     # Add a stdout reporter to show progress in the terminal.

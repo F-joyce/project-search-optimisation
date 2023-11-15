@@ -31,12 +31,22 @@ evaluated = config.evaluated
 dummy_dict_path = config.dummy_dict_path
 backup_dict_path = config.backup_dict_path
 
+# creating the folder structure for the batcher to work with the simulator, the number
+# of folders depends on the MAX_BATCH which represent how many processes the system will 
+# be able to run simultaneously
+
 for batch_number in range(MAX_BATCH):
     shutil.rmtree(f"{experiment_path}/processes/{batch_number}", ignore_errors=True)
     os.mkdir(f"{experiment_path}/processes/{batch_number}")
     shutil.copyfile(f"{experiment_path}/{name_process}", f"{experiment_path}/processes/{batch_number}/{name_process}")
 
 # evaluate_lowres() calls function to create new images
+
+# wrapper function that accepts parameters required by NEAT and send them to
+# eval_scale_image(), this create a genome/network and output a widthXheight array
+# with value between 0 and 1 that gets converted in different shade of gray 
+# depending how many materials the simulation is using 
+
 def evaluate_lowres(genome, config):
     return eval_scale_image(genome, config, width, height)
 
@@ -58,7 +68,11 @@ class NoveltyEvaluator(object):
         for genome_id, genome in genomes:
             jobs.append(self.pool.apply_async(evaluate_lowres, (genome, config)))
 
+        # the population list is initialised, this get sent to the batcher
+        # the batcher divide the population in batches and run the simulation
         population = []
+
+        # for each genome the array drawn is flattened to be ready for the batcher
         for j in jobs:
             image = np.clip(np.array(j.get()), 0, 255).astype(np.uint8)
             image = decode_image_to_categories(image)
@@ -66,9 +80,12 @@ class NoveltyEvaluator(object):
             array_ind = float_image.reshape(parameters)
             population.append(array_ind)
         
+        # a list of fitnesses is returned
         fitnesses = function_that_batches(population, MAX_BATCH)
 
         new_archive_entries = []
+
+        # for each genome, fitness is added
         for (genome_id, genome), j, fitness in zip(genomes, jobs, fitnesses):
             image = np.clip(np.array(j.get()), 0, 255).astype(np.uint8)
             float_image = image.astype(np.float32) / 255.0
@@ -87,6 +104,10 @@ class NoveltyEvaluator(object):
             #    genome.fitness = min(genome.fitness, adist)
             
             ### This is done in a for loop where each genome/image is evaluated (one at a time)
+
+            # below only certain images are saved, in NEAT documentation they say not all images are saved to 
+            # new_archive_entries to avoid memory issues, but the best genomes should be accessible 
+            # from the reporter object
 
             if random.random() < 0.02:
                 new_archive_entries.append(float_image)
@@ -112,13 +133,17 @@ def run():
     config_path = os.path.join(local_dir, 'novelty_config')
 
     # Note that we provide the custom stagnation class to the Config constructor.
+    # Below is parsing the config file
     config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_path)
 
-    ne = NoveltyEvaluator(1)
+    # Class built above on the same file, include the evaluate function
+    # which append a fitness value calculated through a custom function 
+    # to each genome
 
-    config.output_nodes = 1
+    # 1 represent the number of worker, a bug happens when more than one is used
+    ne = NoveltyEvaluator(1)
 
     pop = neat.Population(config)
 
@@ -130,6 +155,10 @@ def run():
     
     pop.run(ne.evaluate,GENERATIONS)
 
+    # this save the best genome of the whole population
+    # this should be accessible in each generation
+    # but from another module
+     
     winner = stats.best_genome()
 
     image = eval_scale_image(winner, config, full_scale * width, full_scale * height)
@@ -142,6 +171,9 @@ def run():
     image = eval_scale_image(winner, config, width, height)
     float_image = np.array(image, dtype=np.float32) / 255.0
     ne.archive.append(float_image)
+
+    # visualise statistics with max and average fitnesses 
+    
     visualise.plot_stats(stats, ylog=False, view=True)
 
     try:
