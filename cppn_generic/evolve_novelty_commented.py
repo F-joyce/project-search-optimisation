@@ -47,6 +47,9 @@ for batch_number in range(MAX_BATCH):
 # with value between 0 and 1 that gets converted in different shade of gray 
 # depending how many materials the simulation is using 
 
+# TOIMPLEMENT: simplify code removing image coding/decoding when not necessary, remove archive and check if keeps working
+#              test A/B while loop per 50 times, or ne.evaluate with 50 gens
+
 def evaluate_lowres(genome, config):
     return eval_scale_image(genome, config, width, height)
 
