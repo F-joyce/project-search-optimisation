@@ -1,7 +1,4 @@
 import os
-
-
-import os
 import random
 import shutil
 from multiprocessing import Pool
@@ -11,7 +8,7 @@ import numpy as np
 from PIL import Image
 
 import neat
-from shared import eval_scale_image, decode_image_to_categories
+from shared import eval_scale_image, create_array_configuration, encode_array_to_image
 
 from evaluation import function_that_batches
 from dict_utils import save_dictionary_data_compress
@@ -40,7 +37,7 @@ for batch_number in range(MAX_BATCH):
     os.mkdir(f"{experiment_path}/processes/{batch_number}")
     shutil.copyfile(f"{experiment_path}/{name_process}", f"{experiment_path}/processes/{batch_number}/{name_process}")
 
-# evaluate_lowres() calls function to create new images
+# create_configurations() calls function to create new images
 
 # wrapper function that accepts parameters required by NEAT and send them to
 # eval_scale_image(), this create a genome/network and output a widthXheight array
@@ -50,16 +47,15 @@ for batch_number in range(MAX_BATCH):
 # TOIMPLEMENT: simplify code removing image coding/decoding when not necessary, remove archive and check if keeps working
 #              test A/B while loop per 50 times, or ne.evaluate with 50 gens
 
-def evaluate_lowres(genome, config):
-    return eval_scale_image(genome, config, width, height)
+def create_configurations(genome, config):
+    return create_array_configuration(genome, config, width, height)
 
 class Evaluator(object):
     def __init__(self, num_workers):
         self.num_workers = num_workers
         self.pool = Pool(num_workers)
         self.out_index = 1
-    
-    # visualise an image from an array
+
     def image_from_array(self, image):
         return Image.fromarray(image, mode="L")
 
@@ -68,7 +64,7 @@ class Evaluator(object):
         jobs = []
         # create this list of jobs/images for each genome_id, genome in genomes
         for genome_id, genome in genomes:
-            jobs.append(self.pool.apply_async(evaluate_lowres, (genome, config)))
+            jobs.append(self.pool.apply_async(create_configurations, (genome, config)))
 
         # the population list is initialised, this get sent to the batcher
         # the batcher divide the population in batches and run the simulation
@@ -76,49 +72,30 @@ class Evaluator(object):
 
         # for each genome the array drawn is flattened to be ready for the batcher
         for j in jobs:
-            image = np.clip(np.array(j.get()), 0, 255).astype(np.uint8)
-            image = decode_image_to_categories(image)
-            float_image = image.astype(np.float32)
-            array_ind = float_image.reshape(parameters)
-            population.append(array_ind)
+            configuration = np.array(j.get()).astype(np.uint8)
+            configuration_float = configuration.astype(np.float32)
+            configuration_flattened = configuration_float.reshape(parameters)
+            population.append(configuration_flattened)
         
         # a list of fitnesses is returned
         fitnesses = function_that_batches(population, MAX_BATCH)
 
         # for each genome, fitness is added
         for (genome_id, genome), j, fitness in zip(genomes, jobs, fitnesses):
-            image = np.clip(np.array(j.get()), 0, 255).astype(np.uint8)
-            float_image = image.astype(np.float32) / 255.0
 
             ### This is where the fitness for each genome gets evaluated
-
             genome.fitness = fitness[0]
 
             """
             Below is the original fitness evaluation, which calculate novelty of an image using
             this adist criteria, it has been substituted with the fitness calculate by the simulation
             """
-            #genome.fitness = (width * height) ** 0.5
-            #for a in self.archive:
-            #    adist = np.linalg.norm(float_image.ravel() - a.ravel())
-            #    genome.fitness = min(genome.fitness, adist)
-            
-            ### This is done in a for loop where each genome/image is evaluated (one at a time)
-
-            # below only certain images are saved, in NEAT documentation they say not all images are saved to 
-            # new_archive_entries to avoid memory issues, but the best genomes should be accessible 
-            # from the reporter object
 
             if random.random() < 0.02:
-                # im = self.image_from_array(image)
-                # im.save("novelty-{0:06d}.png".format(self.out_index))
-
-
-                image = eval_scale_image(genome, config, full_scale * width, full_scale * height)
-
-                im = np.clip(np.array(image), 0, 255).astype(np.uint8)
-                im = self.image_from_array(im)
-                im.save('novelty-{0:06d}.png'.format(self.out_index))
+                configuration = np.array(j.get())
+                image_array = encode_array_to_image(configuration)
+                im = self.image_from_array(image_array)
+                im.save("conf-{0:06d}.png".format(self.out_index))
 
                 self.out_index += 1
 
@@ -152,7 +129,7 @@ def run():
     # eventual while start
     #while count < 20:
     count += 1
-    pop.run(ne.evaluate,20)
+    pop.run(ne.evaluate,10)
 
     # this save the best genome of the whole population
     # this should be accessible in each generation
@@ -166,16 +143,7 @@ def run():
     im = ne.image_from_array(im)
     im.save('winning-novelty-{0:06d}.png'.format(pop.generation))
 
-
-    image = eval_scale_image(winner, config, width, height)
-    float_image = np.array(image, dtype=np.float32) / 255.0
-
     # visualise statistics with max and average fitnesses 
-    
-
-    
-
-    
 
     print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")
 # eventual while end

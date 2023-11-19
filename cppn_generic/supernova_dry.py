@@ -5,6 +5,7 @@ Bshape=np.loadtxt('./data.txt')
 sample_fitness = -1.40e-08
 
 flat = Bshape.flatten()
+flat = flat * 255/6
 sum_ = np.sum(flat)
 sample_fitness = sum_
 

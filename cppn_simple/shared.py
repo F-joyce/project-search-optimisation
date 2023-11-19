@@ -14,7 +14,7 @@ categories_array = [int(x) for x in categories_image]
 row_bias = -2
 column_bias = -2
 
-def create_array_configuration(genome, config, width, height, nmaterials):
+def create_array_configuration(genome, config, width, height, nmaterials=nmaterials):
     net = neat.nn.FeedForwardNetwork.create(genome, config)
     configuration = []
     for row_index in range(height):
@@ -25,15 +25,15 @@ def create_array_configuration(genome, config, width, height, nmaterials):
             
             output = net.activate([x,y])
             for index,value in enumerate(categories_array):
-                if index == len(categories_array):
+                if index == (len(categories_array)-1):
                     cell_value = nmaterials-1
-                elif output >= value and output < categories_array[index+1]:
+                elif output[0] >= value and output[0] < categories_array[index+1]:
                     cell_value = index
                     break
             row_values.append(cell_value)
         configuration.append(row_values)
 
-    return row_values
+    return configuration
 
 def eval_scale_image(genome, config, width, height, nmaterials=nmaterials):
     net = neat.nn.FeedForwardNetwork.create(genome, config)
@@ -60,6 +60,11 @@ def decode_image_to_categories(image):
     for i, row in enumerate(image):
         for ii, column in enumerate(row):
             image[i][ii] = mapper_image_to_material[column]
+    return image
+
+def encode_array_to_image(array):
+    array = np.asarray(array, dtype=np.int16)
+    image = np.vectorize(categories_image.__getitem__)(array)
     return image
 
 # Original mono function
