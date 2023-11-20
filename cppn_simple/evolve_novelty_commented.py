@@ -86,16 +86,15 @@ class Evaluator(object):
             ### This is where the fitness for each genome gets evaluated
             genome.fitness = fitness[0]
 
-            """
-            Below is the original fitness evaluation, which calculate novelty of an image using
-            this adist criteria, it has been substituted with the fitness calculate by the simulation
-            """
-
             if random.random() < 0.02:
-                configuration = np.array(j.get())
-                image_array = encode_array_to_image(configuration)
-                im = self.image_from_array(image_array)
-                im.save("conf-{0:06d}.png".format(self.out_index))
+                eval_step1 = eval_scale_image(genome, config, 1 * width, 1 * height)
+                eval_step2 = np.clip(np.array(eval_step1), 0, 255).astype(np.uint8)
+                conf_step1 = np.array(j.get())
+                conf_step2 = encode_array_to_image(conf_step1)
+                conf_step3 = self.image_from_array(conf_step2)
+                eval_step3 = self.image_from_array(eval_step2)
+                conf_step3.save('conf-{0:06d}.png'.format(self.out_index))
+                eval_step3.save('eval-{0:06d}.png'.format(self.out_index))
 
                 self.out_index += 1
 

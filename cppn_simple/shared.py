@@ -9,7 +9,6 @@ categories_image = [int(x) for x in categories_image]
 mapper_image_to_material = {v:i for i,v in enumerate(categories_image)}
 
 categories_array = np.linspace(0,1, num=nmaterials)
-categories_array = [int(x) for x in categories_image]
 
 row_bias = -2
 column_bias = -2
@@ -65,6 +64,7 @@ def decode_image_to_categories(image):
 def encode_array_to_image(array):
     array = np.asarray(array, dtype=np.int16)
     image = np.vectorize(categories_image.__getitem__)(array)
+    print(image)
     return image
 
 # Original mono function
