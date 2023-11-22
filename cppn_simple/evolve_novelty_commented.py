@@ -8,12 +8,14 @@ import numpy as np
 from PIL import Image
 
 import neat
-from shared import eval_scale_image, create_array_configuration, encode_array_to_image
-
+from shared import create_array_configuration, encode_array_to_image
 from evaluation import function_that_batches
 from dict_utils import save_dictionary_data_compress
 import config
+from customReproduction import DefaultReproduction as CustomReproduction
 
+fromcheckpoint = False
+save_checkpoint = False
 
 height, width = config.shape
 full_scale = config.full_scale
@@ -57,7 +59,7 @@ class Evaluator(object):
         self.out_index = 1
 
     def image_from_array(self, image):
-        return Image.fromarray(image, mode="L")
+        return Image.fromarray(image, mode="L",)
 
     def evaluate(self, genomes, config):
 
@@ -72,11 +74,11 @@ class Evaluator(object):
 
         # for each genome the array drawn is flattened to be ready for the batcher
         for j in jobs:
-            configuration = np.array(j.get()).astype(np.uint8)
+            configuration = np.array(j.get())
             configuration_float = configuration.astype(np.float32)
             configuration_flattened = configuration_float.reshape(parameters)
             population.append(configuration_flattened)
-        
+
         # a list of fitnesses is returned
         fitnesses = function_that_batches(population, MAX_BATCH)
 
@@ -87,14 +89,11 @@ class Evaluator(object):
             genome.fitness = fitness[0]
 
             if random.random() < 0.02:
-                eval_step1 = eval_scale_image(genome, config, 1 * width, 1 * height)
-                eval_step2 = np.clip(np.array(eval_step1), 0, 255).astype(np.uint8)
-                conf_step1 = np.array(j.get())
-                conf_step2 = encode_array_to_image(conf_step1)
-                conf_step3 = self.image_from_array(conf_step2)
-                eval_step3 = self.image_from_array(eval_step2)
-                conf_step3.save('conf-{0:06d}.png'.format(self.out_index))
-                eval_step3.save('eval-{0:06d}.png'.format(self.out_index))
+                conf_big_step1 = create_array_configuration(genome, config, width * full_scale, height * full_scale)
+                conf_big_step2 = encode_array_to_image(conf_big_step1)
+                conf_big_half = np.array(conf_big_step2).astype(np.uint8) # important step, PIL misbehave when fed float numbers as pixel valuess
+                conf_big_step3 = self.image_from_array(conf_big_half)
+                conf_big_step3.save('conf_full_size-{0:06d}b.png'.format(self.out_index))
 
                 self.out_index += 1
 
@@ -107,7 +106,7 @@ def run():
 
     # Note that we provide the custom stagnation class to the Config constructor.
     # Below is parsing the config file
-    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+    config = neat.Config(neat.DefaultGenome, CustomReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_path)
 
@@ -117,13 +116,23 @@ def run():
 
     # 1 represent the number of worker, a bug happens when more than one is used
     ne = Evaluator(1)
-
-    pop = neat.Population(config)
+    
+    if fromcheckpoint:
+        filename = 'neat-checkpoint-7'
+        pop = neat.Checkpointer.restore_checkpoint(filename)
+    else:
+        pop = neat.Population(config)
 
     # Add a stdout reporter to show progress in the terminal.
     pop.add_reporter(neat.StdOutReporter(True))
     stats = neat.StatisticsReporter()
     pop.add_reporter(stats)
+
+    if save_checkpoint:
+        frequency_in_generations = 1
+        checkpoint = neat.Checkpointer(generation_interval=frequency_in_generations)
+        pop.add_reporter(checkpoint)
+
     count = 0
     # eventual while start
     #while count < 20:
@@ -136,11 +145,11 @@ def run():
     
     winner = stats.best_genome()
 
-    image = eval_scale_image(winner, config, full_scale * width, full_scale * height)
-
-    im = np.clip(np.array(image), 0, 255).astype(np.uint8)
-    im = ne.image_from_array(im)
-    im.save('winning-novelty-{0:06d}.png'.format(pop.generation))
+    image = create_array_configuration(winner, config, 15 * width, 15 * height)
+    image = encode_array_to_image(image)
+    image = np.array(image).astype(np.uint8)
+    im = ne.image_from_array(image)
+    im.save('winning-conf-{0:06d}.png'.format(pop.generation))
 
     # visualise statistics with max and average fitnesses 
 
@@ -154,7 +163,8 @@ def run():
     
     with open('total-num-eval.txt', 'w') as f:
             f.write('%d' % len(evaluated))
-    visualise.plot_stats(stats, ylog=False, view=True)
+    #visualise.plot_stats(stats, ylog=False, view=True)
+    stats.save()
 
 
 if __name__ == '__main__':

@@ -3,11 +3,11 @@ import os
 
 #UNIVERSAL PARAMETERS
 
-POPULATION = 100
+POPULATION = 80
 GENERATIONS = 20
 MAX_BATCH = 40
-nmaterials = 100
-shape = (5,5) # vertical,horizontal
+nmaterials = 50
+shape = (15,15) # vertical,horizontal
 parameters = shape[0]*shape[1]
 name_conf_file = "data.txt"
 name_result_file = "min.txt"
@@ -36,5 +36,6 @@ seeded = False
 
 # CPPN-only PARAMETERS
 full_scale = 15
+nocrossover = False
 
 

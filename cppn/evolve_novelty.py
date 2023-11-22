@@ -39,8 +39,8 @@ if TESTING:
 else:
     main_dict_path = f"{common_barriers_folder}/barriers_main_dict.gzip"
 
-width, height = 15, 30
-full_scale = 1
+width, height = 15, 15
+full_scale = 30
 MAX_BATCH = 8
 
 path = os.getcwd()
@@ -89,7 +89,7 @@ class NoveltyEvaluator(object):
         for j in jobs:
             image = np.clip(np.array(j.get()), 0, 255).astype(np.uint8)
             float_image = image.astype(np.float32) / 255.0
-            array_ind = float_image.reshape(450)
+            array_ind = float_image.reshape(width*height)
             population.append(array_ind)
         
         fitnesses = batch_fitness_simulation(population, MAX_BATCH)
@@ -120,12 +120,17 @@ class NoveltyEvaluator(object):
                     image = eval_color_image(genome, config, full_scale * width, full_scale * height)
                 elif self.scheme == 'mono':
                     image = eval_mono_image(genome, config, full_scale * width, full_scale * height)
+                    image_small = eval_mono_image(genome, config, width, height)
+
                 else:
                     raise Exception('Unexpected scheme: {0!r}'.format(self.scheme))
 
                 im = np.clip(np.array(image), 0, 255).astype(np.uint8)
+                im_sm = np.clip(np.array(image_small), 0, 255).astype(np.uint8)
                 im = self.image_from_array(im)
+                im_sm = self.image_from_array(im_sm)
                 im.save('novelty-{0:06d}.png'.format(self.out_index))
+                im_sm.save('novelty{0:06d}_small.png'.format(self.out_index))
 
                 self.out_index += 1
 
@@ -165,6 +170,7 @@ def run():
         image = eval_color_image(winner, config, full_scale * width, full_scale * height)
     elif ne.scheme == 'mono':
         image = eval_mono_image(winner, config, full_scale * width, full_scale * height)
+
     else:
         raise Exception('Unexpected scheme: {0!r}'.format(ne.scheme))
 
