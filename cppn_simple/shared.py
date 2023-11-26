@@ -1,17 +1,13 @@
 import neat
 import numpy as np
 import config
-
 nmaterials = config.nmaterials
-
-
 
 row_bias = -2
 column_bias = -2
 
 categories_array = np.linspace(0,1, num=nmaterials)
 mapper_material_to_pixel = {i:int(v) for i,v in enumerate(np.linspace(0,255, num=nmaterials))}
-
 
 def create_array_configuration(genome, config, width, height, nmaterials=nmaterials):
     net = neat.nn.FeedForwardNetwork.create(genome, config)

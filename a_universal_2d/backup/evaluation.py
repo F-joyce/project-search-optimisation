@@ -5,7 +5,7 @@ import sys
 import time
 from threading import Thread
 
-from dict_utils import get_fitness, add_to_dictionary_from_list
+from dict_utils import get_fitness, add_to_dictionary_from_list, save_dictionary_data_compress
 
 import config
 
@@ -17,7 +17,6 @@ barriers_dict = config.barriers_dict
 backup_dict = config.backup_dict
 evaluated = config.evaluated
 experiment_path = config.experiment_path
-log = config.data_object
 
 def function_that_evaluate_population(pop):
     iteration = 0
@@ -90,7 +89,7 @@ def function_that_batches(population, max_batch):
     print("The individual to be calculated were: ", len(new_fitnesses_individuals))
 
     working_dictionary = add_to_dictionary_from_list(working_dictionary, new_fitnesses_individuals, new_fitnesses)
-    backup_dictionary = add_to_dictionary_from_list(backup_dictionary, new_fitnesses_individuals, new_fitnesses)
+    # backup_dictionary = add_to_dictionary_from_list(backup_dictionary, new_fitnesses_individuals, new_fitnesses)
     # if len(backup_dictionary) > len_backup_initial:
     #     save = Thread(target=save_dictionary_data_compress, args=(backup_dictionary, f"{experiment_path}/backup_dict.gzip"))
     #     print("Opened Thread to save backup dictionary")
@@ -100,25 +99,15 @@ def function_that_batches(population, max_batch):
     # else:
     #     print("No new fitnesses to save")
 
-    initial_eval_value = len(evaluated_ind)
-
-    log.increaseGen()
-
     for individual in initial_population:
-        
         if isinstance(individual, np.ndarray):
-            individual = individual.tolist()
+            individual = list(individual)
         if individual in evaluated:
             pass
         else:
             evaluated_ind.append(individual)
-            
         fitness = get_fitness(working_dictionary, individual)
-        log.updateHighLow(fitness, tuple(individual))
         total_fitnesses.append((fitness,))  # fitness is stored as a tuple
                                             # for DEAP eaSimple requirements
-    
-    unique_evaluations = len(evaluated_ind) - initial_eval_value
-    log.saveGeneration(unique_evaluations)
 
     return total_fitnesses

@@ -11,8 +11,9 @@ import neat
 from shared import create_array_configuration, encode_array_to_image
 from evaluation import function_that_batches
 from dict_utils import save_dictionary_data_compress
-import config
 from customReproduction import DefaultReproduction as CustomReproduction
+
+import config
 
 fromcheckpoint = False
 save_checkpoint = False
@@ -29,6 +30,7 @@ backup_dict = config.backup_dict
 evaluated = config.evaluated
 dummy_dict_path = config.dummy_dict_path
 backup_dict_path = config.backup_dict_path
+log = config.data_object
 
 # creating the folder structure for the batcher to work with the simulator, the number
 # of folders depends on the MAX_BATCH which represent how many processes the system will 
@@ -76,8 +78,8 @@ class Evaluator(object):
         for j in jobs:
             configuration = np.array(j.get())
             configuration_float = configuration.astype(np.float32)
-            configuration_flattened = configuration_float.reshape(parameters)
-            population.append(configuration_flattened)
+            #configuration_flattened = configuration_float.reshape(parameters)
+            population.append(configuration_float)
 
         # a list of fitnesses is returned
         fitnesses = function_that_batches(population, MAX_BATCH)
@@ -93,7 +95,7 @@ class Evaluator(object):
                 conf_big_step2 = encode_array_to_image(conf_big_step1)
                 conf_big_half = np.array(conf_big_step2).astype(np.uint8) # important step, PIL misbehave when fed float numbers as pixel valuess
                 conf_big_step3 = self.image_from_array(conf_big_half)
-                conf_big_step3.save('conf_full_size-{0:06d}b.png'.format(self.out_index))
+                conf_big_step3.save('conf_full_size-{0:06d}m.png'.format(self.out_index))
 
                 self.out_index += 1
 
@@ -137,7 +139,7 @@ def run():
     # eventual while start
     #while count < 20:
     count += 1
-    pop.run(ne.evaluate,10)
+    pop.run(ne.evaluate,GENERATIONS)
 
     # this save the best genome of the whole population
     # this should be accessible in each generation
@@ -165,7 +167,8 @@ def run():
             f.write('%d' % len(evaluated))
     #visualise.plot_stats(stats, ylog=False, view=True)
     stats.save()
-
+    log.saveData()
+    log.saveDataCsv()
 
 if __name__ == '__main__':
     run()

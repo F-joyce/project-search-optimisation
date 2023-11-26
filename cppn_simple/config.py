@@ -1,13 +1,15 @@
 from dict_utils import load_dictionary_compressed
+from data_handler import DataRun
 import os
 
 #UNIVERSAL PARAMETERS
+data_object = DataRun("run_logs")
 
 POPULATION = 80
-GENERATIONS = 20
+GENERATIONS = 5
 MAX_BATCH = 40
-nmaterials = 50
-shape = (15,15) # vertical,horizontal
+nmaterials = 5
+shape = (5,5) # vertical,horizontal
 parameters = shape[0]*shape[1]
 name_conf_file = "data.txt"
 name_result_file = "min.txt"

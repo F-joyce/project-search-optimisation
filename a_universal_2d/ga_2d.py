@@ -41,6 +41,7 @@ barriers_dict = config.barriers_dict
 backup_dict = config.backup_dict
 evaluated = config.evaluated
 
+logCustom = config.data_object
 
 def function_that_creates_folders_structure(MAX_BATCH):
     for batch_number in range(MAX_BATCH):
@@ -101,11 +102,14 @@ if __name__ == "__main__":
     max_fitness = log.select('max')
 
     plt.plot(gen, max_fitness)
-    plt.savefig()
+    plt.savefig("plot_run.png")
 
     df_log = pd.DataFrame(log)
 
     df_log.to_csv("barriers_ga_statistics.csv", index = False)
+    logCustom.saveData()
+    logCustom.saveDataCsv()
+
 
     #print(f"Initial length: main dict {initial_main_dict_len}, backup {initial_backup_len}, eval list {initial_evaluated}")
     #print(f"Final length: main dict {len(config.barriers_dict)}, backup {len(config.backup_dict)}, eval list {len(config.evaluated)}")

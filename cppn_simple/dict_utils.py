@@ -65,7 +65,8 @@ def load_dictionary_compressed(filename):
 
 def add_to_dictionary(dictionary, array, fitness):
     farray = np.asfarray(array)
-    tuple_to_add = tuple(farray)
+    flattened_farray = farray.flatten()
+    tuple_to_add = tuple(flattened_farray)
     if tuple_to_add in dictionary.keys():
         return False
     else:
@@ -79,7 +80,10 @@ def add_to_dictionary_from_list(dictionary, list_arrays, list_fitnesses):
 
 def get_fitness(dictionary, array):
     farray = numpy.asfarray(array)
-    key = tuple(farray)
+    flattened_farray = farray.flatten()
+    key = tuple(flattened_farray)
+    #print("Key is")
+    #print(key)
     if key in dictionary.keys():
         fitness = dictionary[key]
         return fitness
@@ -104,7 +108,8 @@ non_float entries found is %s" % (num_initial, num_in))
     if num_in > 0:
         for each_integer_key in list_keys_inconsistent:
             as_farray = numpy.asfarray(each_integer_key)
-            as_tuple = tuple(as_farray)
+            as_flattened_farray = as_farray.flatten()
+            as_tuple = tuple(as_flattened_farray)
             fitness = get_fitness(data, each_integer_key)
             del data[each_integer_key]
             add_to_dictionary(data, as_tuple, fitness)

@@ -17,6 +17,7 @@ barriers_dict = config.barriers_dict
 backup_dict = config.backup_dict
 evaluated = config.evaluated
 experiment_path = config.experiment_path
+log = config.data_object
 
 def function_that_evaluate_population(pop):
     iteration = 0
@@ -99,15 +100,25 @@ def function_that_batches(population, max_batch):
     # else:
     #     print("No new fitnesses to save")
 
+    initial_eval_value = len(evaluated_ind)
+
+    log.increaseGen()
+
     for individual in initial_population:
+        
         if isinstance(individual, np.ndarray):
-            individual = list(individual)
+            individual = individual.tolist()
         if individual in evaluated:
             pass
         else:
             evaluated_ind.append(individual)
+            
         fitness = get_fitness(working_dictionary, individual)
+        log.updateHighLow(fitness, tuple(individual))
         total_fitnesses.append((fitness,))  # fitness is stored as a tuple
                                             # for DEAP eaSimple requirements
+    
+    unique_evaluations = len(evaluated_ind) - initial_eval_value
+    log.saveGeneration(unique_evaluations)
 
     return total_fitnesses
