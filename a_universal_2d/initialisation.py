@@ -44,6 +44,6 @@ def function_that_builds_configuration(icls):
     print("PERCENTAGES ARE ", instance_percentages)
     array = np.random.choice(nmaterials, parameters, p=instance_percentages)
     #assert(array.shape[0] == (shape[0]*shape[1])), "parameters number do not match shape"
-    array_shaped = array.reshape(shape[0], shape[1])
-    new_configuration = icls(array_shaped.tolist())
+    #array_shaped = array.reshape(shape[0], shape[1])
+    new_configuration = icls(array.tolist())
     return new_configuration

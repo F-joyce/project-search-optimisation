@@ -25,7 +25,6 @@ def function_that_evaluate_population(pop):
     fitness = []
     for configuration in pop:
         os.chdir(f"{working_dir_path}/processes/{iteration}")
-        configuration = configuration.flatten()
         np.savetxt(name_conf_file, configuration, delimiter=',')
         #np.savetxt(name_conf_file, configuration, fmt='%.0f')
         # shell=True should open processes in the background, but doesn't
