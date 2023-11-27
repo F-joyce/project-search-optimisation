@@ -7,13 +7,13 @@ data_object = DataRun("run_logs")
 
 POPULATION = 80
 GENERATIONS = 5
-MAX_BATCH = 40
-nmaterials = 5
-shape = (5,5) # vertical,horizontal
+MAX_BATCH = 10
+nmaterials = 3
+shape = (30,15) # vertical,horizontal
 parameters = shape[0]*shape[1]
-name_conf_file = "data.txt"
+name_conf_file = "data.csv"
 name_result_file = "min.txt"
-name_process = "supernova_dry.py"
+name_process = "supernova2m.py"
 experiment_path = os.getcwd()
 dummy_dict_path = f"{experiment_path}/barriers_dummy_dict.gzip"
 backup_dict_path = f"{experiment_path}/backup/last_working_main.gzip"
@@ -32,7 +32,7 @@ BIT_MUT_PROBABILITY = 0.1
 TOURN_SIZE = 3
 CX_TYPE = "cxTwoPoint"
 
-percentages_ranges = [(80,90),(0,10),(0,10),(0,10),(0,10)]#,(0,10)]
+percentages_ranges = [(33,33),(33,33),(33,33)]#,(0,10),(0,10),(0,10)]
 
 seeded = False
 
