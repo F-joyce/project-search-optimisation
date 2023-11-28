@@ -45,11 +45,16 @@ def mutSwapMaterialCustom(individual, indpb):
     """
     list_ = [x for x in range(nmaterials)]
     for i in range(len(individual)):
-        for ii in range(len(individual[i])):
+        try:
+            for ii in range(len(individual[i])):
+                if random.random() < indpb:
+                    temp_list = list_.copy()
+                    temp_list.remove(individual[i][ii])
+                    individual[i][ii] = random.choice(temp_list)
+        except TypeError: # avoid two-dimensional iteration for flattened arrays
             if random.random() < indpb:
-                temp_list = list_.copy()
-                temp_list.remove(individual[i][ii])
-                individual[i][ii] = random.choice(temp_list)
-
+                    temp_list = list_.copy()
+                    temp_list.remove(individual[i])
+                    individual[i] = random.choice(temp_list)
 
     return individual,
