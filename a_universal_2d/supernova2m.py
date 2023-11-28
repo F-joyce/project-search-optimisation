@@ -8,7 +8,8 @@ import datetime
 import numpy as np
 import time
 
-from ...config import shape, name_conf_file
+name_conf_file = 'data.txt'
+shape = (30,15)
 
 print('start'+str(datetime.datetime.now().time()))
 path = os.getcwd()
