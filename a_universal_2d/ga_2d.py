@@ -40,7 +40,7 @@ dummy_dict_path = config.dummy_dict_path
 barriers_dict = config.barriers_dict
 backup_dict = config.backup_dict
 evaluated = config.evaluated
-
+new_dict = config.new_dict
 logCustom = config.data_object
 
 def function_that_creates_folders_structure(MAX_BATCH):
@@ -95,9 +95,6 @@ if __name__ == "__main__":
 
     pop, log, hof = main_function_that_run_ga(p_size = POPULATION, gen = GENERATIONS)
 
-    shutil.copyfile(dummy_dict_path, f"{experiment_path}/backup/last_working_dummy.gzip")
-    save_dictionary_data_compress(barriers_dict, dummy_dict_path)
-
     gen = log.select('gen')
     max_fitness = log.select('max')
 
@@ -106,9 +103,20 @@ if __name__ == "__main__":
 
     df_log = pd.DataFrame(log)
 
-    df_log.to_csv("barriers_ga_statistics.csv", index = False)
+    df_log.to_csv("deap_statistics.csv", index = False)
     logCustom.saveData()
     logCustom.saveDataCsv()
+
+    if not new_dict:
+        try:
+            shutil.copyfile(dummy_dict_path, f"{experiment_path}/backup/last_working_dummy.gzip")
+        except:
+            print("Last working dict could NOT be backed up, probably missing folder backup in experiment path")
+    try:
+        save_dictionary_data_compress(barriers_dict, dummy_dict_path)
+    except:
+        print("Dictionary with new fitnesses of the run could NOT be saved.")
+        print("Manually merge backup dictionary with the old working dictionary")
 
 
     #print(f"Initial length: main dict {initial_main_dict_len}, backup {initial_backup_len}, eval list {initial_evaluated}")

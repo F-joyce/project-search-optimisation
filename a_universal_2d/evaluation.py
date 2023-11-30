@@ -5,7 +5,7 @@ import sys
 import time
 from threading import Thread
 
-from dict_utils import get_fitness, add_to_dictionary_from_list
+from dict_utils import get_fitness, add_to_dictionary_from_list, save_dictionary_data_compress
 
 import config
 
@@ -92,14 +92,14 @@ def function_that_batches(population, max_batch):
 
     working_dictionary = add_to_dictionary_from_list(working_dictionary, new_fitnesses_individuals, new_fitnesses)
     backup_dictionary = add_to_dictionary_from_list(backup_dictionary, new_fitnesses_individuals, new_fitnesses)
-    # if len(backup_dictionary) > len_backup_initial:
-    #     save = Thread(target=save_dictionary_data_compress, args=(backup_dictionary, f"{experiment_path}/backup_dict.gzip"))
-    #     print("Opened Thread to save backup dictionary")
-    #     save.start()
-    #     save.join()
-    #     print(f"Dictionary saved as backup_dict.gzip with {len(backup_dictionary)} configurations")
-    # else:
-    #     print("No new fitnesses to save")
+    if len(backup_dictionary) > len_backup_initial:
+        save = Thread(target=save_dictionary_data_compress, args=(backup_dictionary, f"{experiment_path}/backup_dict.gzip"))
+        print("Opened Thread to save backup dictionary")
+        save.start()
+        save.join()
+        print(f"Dictionary saved as backup_dict.gzip with {len(backup_dictionary)} configurations")
+    else:
+        print("No new fitnesses to save")
 
     initial_eval_value = len(evaluated_ind)
 
@@ -121,5 +121,6 @@ def function_that_batches(population, max_batch):
     
     unique_evaluations = len(evaluated_ind) - initial_eval_value
     log.saveGeneration(unique_evaluations)
+    log.saveDataCsv(f'temp_logs_{log.generation}')
 
     return total_fitnesses

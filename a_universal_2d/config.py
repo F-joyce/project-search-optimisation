@@ -19,8 +19,10 @@ dummy_dict_path = f"{experiment_path}/barriers_dummy_dict.gzip"
 backup_dict_path = f"{experiment_path}/backup/last_working_main.gzip"
 try:
     barriers_dict = load_dictionary_compressed(f"{experiment_path}/barriers_dummy_dict.gzip")
+    new_dict = False
 except:
     barriers_dict = {}
+    new_dict = True
 
 backup_dict = {}
 evaluated = []
