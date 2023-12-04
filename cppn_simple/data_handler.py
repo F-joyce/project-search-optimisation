@@ -49,6 +49,11 @@ class DataRun(object):
         with gzip.open(self.name, 'w', compresslevel=1) as file:
             pickle.dump(self.data, file, protocol=pickle.HIGHEST_PROTOCOL)
 
-    def saveDataCsv(self):
+    def saveDataCsv(self, filename = 'run_logs'):
         df = pandas.DataFrame.from_dict(self.data, orient="index") #, columns= [column for column in self.data[1].keys()], )
-        df.to_csv(f"{self.name}.csv")
+        df.to_csv(f"{filename}.csv")
+
+# todo plot, min max and avg with variance band 
+# todo print_image with labels
+# todo minimal documentation
+# todo remove parameters for origin

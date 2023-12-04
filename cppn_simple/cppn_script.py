@@ -25,12 +25,14 @@ parameters = config.parameters
 GENERATIONS = config.GENERATIONS
 experiment_path = config.experiment_path
 name_process = config.name_process
+
 barriers_dict = config.barriers_dict
 backup_dict = config.backup_dict
 evaluated = config.evaluated
 dummy_dict_path = config.dummy_dict_path
 backup_dict_path = config.backup_dict_path
-log = config.data_object
+new_dict = config.new_dict
+logCustom = config.data_object
 
 # creating the folder structure for the batcher to work with the simulator, the number
 # of folders depends on the MAX_BATCH which represent how many processes the system will 
@@ -104,11 +106,11 @@ class Evaluator(object):
 def run():
     # Determine path to configuration file.
     local_dir = os.path.dirname(__file__)
-    config_path = os.path.join(local_dir, 'novelty_config')
+    config_path = os.path.join(local_dir, 'cppn_configuration')
 
     # Note that we provide the custom stagnation class to the Config constructor.
     # Below is parsing the config file
-    config = neat.Config(neat.DefaultGenome, CustomReproduction,
+    cppn_config = neat.Config(neat.DefaultGenome, CustomReproduction,
                          neat.DefaultSpeciesSet, neat.DefaultStagnation,
                          config_path)
 
@@ -123,7 +125,7 @@ def run():
         filename = 'neat-checkpoint-7'
         pop = neat.Checkpointer.restore_checkpoint(filename)
     else:
-        pop = neat.Population(config)
+        pop = neat.Population(cppn_config)
 
     # Add a stdout reporter to show progress in the terminal.
     pop.add_reporter(neat.StdOutReporter(True))
@@ -145,9 +147,13 @@ def run():
     # this should be accessible in each generation
     # but from another module
     
+    stats.save()
+    logCustom.saveData()
+    logCustom.saveDataCsv()
+    
     winner = stats.best_genome()
 
-    image = create_array_configuration(winner, config, 15 * width, 15 * height)
+    image = create_array_configuration(winner, cppn_config, 15 * width, 15 * height)
     image = encode_array_to_image(image)
     image = np.array(image).astype(np.uint8)
     im = ne.image_from_array(image)
@@ -157,18 +163,21 @@ def run():
 
     print(f"Added {len(backup_dict)} new configurations/fitness pair to dictionary")
 # eventual while end
+    if not new_dict:
+        try:
+            shutil.copyfile(dummy_dict_path, backup_dict_path)
+        except:
+            print("Last working dict could NOT be backed up, probably missing folder backup in experiment path")
+            
     try:
-        shutil.copyfile(dummy_dict_path, backup_dict_path)
+        save_dictionary_data_compress(barriers_dict, dummy_dict_path)
     except:
-        pass
-    save_dictionary_data_compress(barriers_dict, dummy_dict_path)
-    
-    with open('total-num-eval.txt', 'w') as f:
-            f.write('%d' % len(evaluated))
+        print("Dictionary with new fitnesses of the run could NOT be saved.")
+        print("Manually merge backup dictionary with the old working dictionary")
+
+
     #visualise.plot_stats(stats, ylog=False, view=True)
-    stats.save()
-    log.saveData()
-    log.saveDataCsv()
+    
 
 if __name__ == '__main__':
     run()
