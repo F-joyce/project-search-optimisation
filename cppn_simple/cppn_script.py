@@ -15,8 +15,9 @@ from customReproduction import DefaultReproduction as CustomReproduction
 
 import config
 
-fromcheckpoint = False
-save_checkpoint = False
+fromcheckpoint = config.fromcheckpoint
+save_checkpoint = config.save_checkpoint
+checkpoint_to_load_filename = config.checkpoint_to_load_filename
 
 height, width = config.shape
 full_scale = config.full_scale
@@ -122,7 +123,7 @@ def run():
     ne = Evaluator(1)
     
     if fromcheckpoint:
-        filename = 'neat-checkpoint-7'
+        filename = checkpoint_to_load_filename
         pop = neat.Checkpointer.restore_checkpoint(filename)
     else:
         pop = neat.Population(cppn_config)
@@ -150,7 +151,7 @@ def run():
     stats.save()
     logCustom.saveData()
     logCustom.saveDataCsv()
-    
+
     winner = stats.best_genome()
 
     image = create_array_configuration(winner, cppn_config, 15 * width, 15 * height)

@@ -41,5 +41,8 @@ seeded = False
 # CPPN-only PARAMETERS
 full_scale = 15
 nocrossover = False
+fromcheckpoint = False
+save_checkpoint = True
+checkpoint_to_load_filename = ''
 
 
